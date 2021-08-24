@@ -1,0 +1,2 @@
+# La clé sert d'alias puis dans le tableau [route, controller.methode], niveau d'auth requis, méthode
+default: [/, App\Controller\BlogController.showHomepage, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
