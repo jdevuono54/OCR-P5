@@ -1,0 +1,50 @@
+{% extends "admin/base.html.twig" %}
+
+{% block title %}Accueil - Admin{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="/stylesheets/admin/home.css"/>
+{% endblock %}
+
+{% block adminContent %}
+    <div class="tile is-ancestor mt-4">
+        <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+            <i class="fas fa-pen count-icon has-texte-primary"></i>
+
+            <p class="has-text-centered has-text-weight-bold mt-3">{{ counters.count_valid_articles }}</p>
+            <p class="has-text-centered has-text-weight-bold mt-3">Articles publiés</p>
+        </div>
+
+        <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+            <i class="fas fa-comments count-icon has-texte-primary"></i>
+
+            <p class="has-text-centered has-text-weight-bold mt-3">{{ counters.count_valid_comments }}</p>
+            <p class="has-text-centered has-text-weight-bold mt-3">Commentaires publiés</p>
+        </div>
+
+        <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+            <i class="fas fa-users count-icon has-texte-primary"></i>
+
+            <p class="has-text-centered has-text-weight-bold mt-3">{{ counters.count_valid_users }}</p>
+            <p class="has-text-centered has-text-weight-bold mt-3">Nombres d'utilisateurs valides</p>
+        </div>
+    </div>
+
+    <div class="tile is-ancestor mt-4">
+        <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+            <i class="fas fa-comments count-icon has-text-grey"></i>
+
+            <p class="has-text-centered has-text-weight-bold mt-3">{{ counters.comments_counts - counters.count_valid_comments }}</p>
+            <p class="has-text-centered has-text-weight-bold mt-3">Commentaires en attente</p>
+        </div>
+
+        <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+            <i class="fas fa-users count-icon has-text-grey"></i>
+
+            <p class="has-text-centered has-text-weight-bold mt-3">{{ counters.users_count - counters.count_valid_users }}</p>
+            <p class="has-text-centered has-text-weight-bold mt-3">Nombres d'utilisateurs en attente</p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,62 @@
+#contact-form textarea{
+    resize: none;
+}
+
+.is-primary, .is-active {
+    background-color: #009ce7 !important;
+}
+
+.navbar-menu.is-active{
+    background-color: white !important;
+}
+
+.has-texte-primary{
+    color: #009ce7 !important;
+}
+
+.notification {
+    position: absolute;
+    max-width: 20%;
+    right: 10px;
+}
+
+.navbar-logo{
+    content: url("../images/logo.webp");
+    max-height: 55px;
+}
+
+.footer{
+    background-color: #44556b !important;
+}
+
+::placeholder{
+    color: #44556b !important;
+}
+
+body{
+    background-color: #f4f4f4;
+}
+
+.navbar {
+    background: white !important;
+}
+
+.user-profile-picture-container {
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.user-profile-picture {
+    width: auto;
+    height: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
+    -o-object-position: 50% 40%;
+    object-position: 50% 40%;
+}
+
+.is-invalid{
+    border-color: red !important;
+}

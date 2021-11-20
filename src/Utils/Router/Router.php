@@ -3,6 +3,7 @@
 namespace App\Utils\Router;
 
 use App\Security\Authentification;
+use App\Utils\Twig\TwigManager;
 use InvalidArgumentException;
 
 use App\Utils\HttpRequest\HttpRequest;
@@ -11,11 +12,21 @@ use Symfony\Component\Yaml\Yaml;
 class Router
 {
     private ?HttpRequest $httpRequest;
+    private $auth;
 
     private array $routes = [];
 
-    public function __construct(){
+    public function __construct($file = null){
+        // Si on ne passe pas un chemin perso on récup les routes dans config
+        if($file == null){
+            $file = $_SERVER['DOCUMENT_ROOT'].'/../config/routes.yaml';
+        }
+
         $this->httpRequest = new HttpRequest();
+        $this->auth = new Authentification();
+
+        // On load les routes
+        $this->loadRoutesFromYaml($file);
     }
 
     /**
@@ -36,25 +47,25 @@ class Router
     /**
      * Permet de run le routeur
      *
-     * @return mixed
+     * @param null $options
+     *
+     * @return bool|mixed
      */
-    public function run()
+    public function run($options = null)
     {
         // On récup la route ciblé & l'alias de la route
-        $requestedRoute = $this->httpRequest->uri;
+        $requestedRoute = $this->httpRequest->baseUri;
         $routeAlias = $this->getRouteAlias($requestedRoute);
 
         // Si l'alias existe on vérifie que l'utilisateur à les droits
         if ($routeAlias) {
-            $auth = new Authentification();
+            if (!$this->auth->checkAccessRight($this->routes[$routeAlias][2])) {
 
-            if (!$auth->checkAccessRight($this->routes[$routeAlias][2])) {
-                // Si il n'a pas les droits on se prépare pour le redirigé vers la route par default
-                $routeAlias = "default";
+                // Si il n'a pas les droits on show la page de 403
+                return $this->showErrorWebpage(403);
             }
-        } else {
-            // Si l'alias n'existe pas on se prépare pour le redirigé vers la route par default
-            $routeAlias = "default";
+        } else { // Sinon on affiche la 404
+            return $this->showErrorWebpage(404);
         }
 
         // On explode la méthode et le controller
@@ -66,7 +77,7 @@ class Router
 
         // On instancie le controller & on appelle la méthode
         $wantedController = new $controller();
-        return $wantedController->$method();
+        return $wantedController->$method($options);
     }
 
     /**
@@ -76,11 +87,38 @@ class Router
      * @return false|int|string
      */
     private function getRouteAlias($requestedRoute){
+        // On explode la route ciblée
+        $requestedRouteExploded = explode('/', rtrim($requestedRoute, "/"));
+
         // Pour chaque route
         foreach($this->routes as $alias => $route)
         {
+            $match = true;
+
+            // On explode la route qu'on check
+            $routeToCompareExploded = explode('/', rtrim($route[0], "/"));
+
+            // Si on a pas le même nombre d'éléments on passe a la route suivante
+            if(count($routeToCompareExploded) != count($requestedRouteExploded)){
+                continue;
+            }
+
+            // Pour chaque morceau de l'url
+            foreach ($requestedRouteExploded as $key => $portion){
+
+                // Si la route contient un param format {id} on ne compare pas
+                if(strpos($routeToCompareExploded[$key], '{') !== false){
+                    continue;
+                }
+
+                // Si la portion de l'url cible & celle qu'on analyse ne corresponde pas on indique que ça ne match pas
+                if($portion != $routeToCompareExploded[$key]){
+                    $match = false;
+                }
+            }
+
             // On regarde si le lien correspond au lien cible & on retourne l'alias si c'est le cas
-            if($route[0] == $requestedRoute)
+            if($match)
             {
                 return $alias;
             }
@@ -120,5 +158,50 @@ class Router
         } else {
             throw new \Exception("L'alias n'existe pas");
         }
+    }
+
+    /**
+     * Permet d'éxecuter une route
+     *
+     * @param $alias
+     * @param null $options
+     * @param int $code
+     */
+    public function executeRoute($alias, $options= null, $code = 200){
+        // Si l'alias existe on vérifie que l'utilisateur à les droits
+        if (!$this->auth->checkAccessRight($this->routes[$alias][2])) {
+            // Si il n'a pas les droits on se prépare pour le redirigé vers la route par default
+            $alias = "default";
+        }
+
+        // On ajoute les params
+        $query = $options ? http_build_query($options) : null;
+
+        // On redirige
+        header('Location:' . $this->routes[$alias][0] . '?' . $query, $code);
+    }
+
+    /**
+     * Permet d'afficher une page d'erreur
+     *
+     * @param $code
+     *
+     * @return bool
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    private function showErrorWebpage($code){
+        http_response_code($code);
+
+        // On load twig
+        $twigManager = new TwigManager();
+        $twig = $twigManager->getTwig();
+
+        // On display la page grace a son code
+        $twig->display('error/'.$code.'.html.twig');
+
+        return true;
     }
 }

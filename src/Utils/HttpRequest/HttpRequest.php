@@ -14,7 +14,8 @@ class HttpRequest
     private array $get;
     private $method;
     private array $post;
-    private $uri = [];
+    private $uri = null;
+    private $baseUri = null;
 
     public function __construct()
     {
@@ -26,6 +27,7 @@ class HttpRequest
 
         if(isset($_SERVER["REQUEST_URI"])){
             $this->uri = $_SERVER['REQUEST_URI'];
+            $this->baseUri = strtok($_SERVER["REQUEST_URI"], '?');
         }
     }
 

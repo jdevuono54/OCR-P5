@@ -1,0 +1,99 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Blog{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/stylesheets/user/profile.css"/>
+{% endblock %}
+
+{% block content %}
+    <div class="container hero is-fullheight-with-navbar">
+        <div class="tile is-ancestor mt-4">
+            <div class="tile is-vertical box mr-4 is-4 child-tile">
+
+                <div class="user-picture-container mb-3 mx-auto">
+                    <img class="user-picture" src="{{ user.picture ? '/upload/profile-picture/' ~ user.picture :'/images/default-user.png' }}" loading="lazy">
+                </div>
+
+                <p class="has-text-centered has-text-weight-bold">{{ user.username }}</p>
+
+                <p class="has-text-centered has-text-weight-bold mt-3 {{ user.id_role == 2 ? 'has-text-primary' : 'has-text-danger' }}">{{ user.role_name }}</p>
+
+                {% if session.id == user.id %}
+                    <form id="imageForm">
+                    <div class="file is-small has-name mt-4 is-centered" id="image">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="image">
+                            <span class="file-cta">
+                              <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                              </span>
+                              <span class="file-label">
+                                Modifier l'image
+                              </span>
+                            </span>
+                            <span class="file-name">
+                                {% if post.picture is defined %}
+                                    {{ post.picture }}
+                                {% else %}
+                                    Aucune image sélectionnée
+                                {% endif %}
+                            </span>
+                        </label>
+                    </div>
+                    </form>
+                {% endif %}
+            </div>
+
+            <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+                <i class="fas fa-pen count-icon has-texte-primary"></i>
+
+                <p class="has-text-centered has-text-weight-bold mt-3">{{ user.post_count }}</p>
+                <p class="has-text-centered has-text-weight-bold mt-3">Articles publiés</p>
+            </div>
+
+            <div class="tile box mr-4 is-4 is-vertical child-tile is-vcentered">
+                <i class="fas fa-comments count-icon has-texte-primary"></i>
+
+                <p class="has-text-centered has-text-weight-bold mt-3">{{ user.comments_count }}</p>
+                <p class="has-text-centered has-text-weight-bold mt-3">Commentaires publiés</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $('#image').on("change", () => {
+            const fileInput = document.querySelector('#image input[type=file]');
+
+            if (fileInput.files.length > 0) {
+                const fileName = document.querySelector('#image .file-name');
+                fileName.textContent = fileInput.files[0].name;
+            }
+
+            $.ajax({
+                url: "/profile/{{ session.id }}/edit",
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: new FormData(document.querySelector('form')),
+            }).done(response => {
+                if(!response.error){
+                    notify('success', response.message);
+
+                    setTimeout(reloadPage, 2000);
+                } else {
+                    notify('danger', response.message);
+                }
+            });
+        });
+
+        function reloadPage(){
+            location.reload();
+        }
+    </script>
+{% endblock %}

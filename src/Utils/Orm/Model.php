@@ -13,7 +13,6 @@ abstract class Model
 
     protected static string $primaryKey = "id";
     protected static bool $timestamps = false;
-    protected static bool $softDelete = false;
 
     public function __construct(array $attr = [])
     {
@@ -29,17 +28,6 @@ abstract class Model
     {
         return static::$timestamps;
     }
-
-    /**
-     * Permet de savoir si le model utilise le softdelete
-     *
-     * @return bool
-     */
-    public static function isSoftDelete(): bool
-    {
-        return static::$softDelete;
-    }
-
     /**
      * Methode magique pour récupérer un attribut/une méthode
      *
@@ -57,7 +45,7 @@ abstract class Model
             if (array_key_exists($name, $this->attr)) {
                 return $this->attr[$name];
             } else {
-                throw new AttributeNotExistException("L'attribut n'existe pas");
+                throw new AttributeNotExistException("L'attribut $name n'existe pas");
             }
         }
     }
@@ -106,6 +94,27 @@ abstract class Model
     }
 
     /**
+     * Permet d'update une ligne en base
+     *
+     * @throws EmptyTableNameException
+     */
+    public function update($timestampUpdate = true)
+    {
+        if (static::$table != null) {
+            if ($this->attr[static::$primaryKey] != null) {
+                $query = Query::table(static::$table);
+                $query->where(static::$primaryKey, "=", $this->attr[static::$primaryKey]);
+
+                $query->update($this->attr, $timestampUpdate);
+            } else {
+                throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide pour supprimé une ligne");
+            }
+        } else {
+            throw new EmptyTableNameException("Le nom de la table doit être renseigné");
+        }
+    }
+
+    /**
      * Permet de définir une relation belongsTo
      *
      * @param $modele
@@ -115,7 +124,7 @@ abstract class Model
      *
      * @throws EmptyPrimaryKeyException
      */
-    public function belongsTo($modele, $foreign_key)
+    public function belongsTo($modele, $foreign_key, $hydrate = true)
     {
         // Si la clé primaire est renseignée
         if ($this->attr[static::$primaryKey] != null) {
@@ -124,7 +133,12 @@ abstract class Model
             // On éxecute la requête, la clé primaire est = à la foreign key passer en param
             $query = $query->where($modele::$primaryKey, "=", $this->attr[$foreign_key])->get();
 
-            return $modele::arrayToObject($query)[0];
+            // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+            if($hydrate){
+                return $modele::arrayToObject($query)[0];
+            } else {
+                return $query[0];
+            }
         } else { // Sinon on soulève une erreur
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
         }
@@ -140,7 +154,7 @@ abstract class Model
      *
      * @throws EmptyPrimaryKeyException
      */
-    public function hasMany($modele, $foreign_key)
+    public function hasMany($modele, $foreign_key, $hydrate = true)
     {
         // Si la clé primaire est renseignée
         if ($this->attr[static::$primaryKey] != null) {
@@ -149,7 +163,12 @@ abstract class Model
             // On éxecute la requête, la foreign key doit avoir comme valeur la clé primaire du model sur lequel on execute le hasmany
             $query = $query->where($foreign_key, "=", $this->attr[static::$primaryKey])->get();
 
-            return $modele::arrayToObject($query);
+            // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+            if($hydrate){
+                return $modele::arrayToObject($query);
+            } else {
+                return $query;
+            }
         } else { // Sinon on soulève une erreur
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
         }
@@ -162,11 +181,16 @@ abstract class Model
      *
      * @throws \Exception
      */
-    public static function all()
+    public static function all($hydrate = true)
     {
         $query = Query::table(static::$table)->get();
 
-        return self::arrayToObject($query);
+        // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+        if($hydrate){
+            return self::arrayToObject($query);
+        } else {
+            return $query;
+        }
     }
 
     /**
@@ -179,7 +203,7 @@ abstract class Model
      *
      * @throws \Exception
      */
-    public static function find($criteria = null, array $colomns = [])
+    public static function find($criteria = null, array $colomns = [], $hydrate = true, $limit = null, $offset = null, $sort = [])
     {
         $query = Query::table(static::$table);
 
@@ -193,9 +217,18 @@ abstract class Model
             $query = self::constructQueryWithCriteria($query, $criteria);
         }
 
+        $query->setLimit($limit);
+        $query->setOffset($offset);
+        $query->setSort($sort);
+
         $query = $query->get();
 
-        return self::arrayToObject($query);
+        // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+        if($hydrate){
+            return self::arrayToObject($query);
+        } else {
+            return $query;
+        }
     }
 
     /**
@@ -258,10 +291,10 @@ abstract class Model
      *
      * @return mixed|void
      */
-    public static function first($criteria = null, array $colomns = [])
+    public static function first($criteria = null, array $colomns = [], $hydrate = true)
     {
         // On execute le find
-        $query = self::find($criteria, $colomns);
+        $query = self::find($criteria, $colomns, $hydrate);
 
         // Si y'a un résultat on renvoi le premier
         if ($query != null) {

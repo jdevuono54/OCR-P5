@@ -1,0 +1,83 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/stylesheets/auth.css"/>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="column is-6-desktop is-offset-3-desktop is-paddingless">
+            <section class="hero is-fullheight-with-navbar">
+                <div class="hero-body">
+                    <div class="container">
+                        <form class="box" method="post" action="registration" id="registerForm">
+                            <div class="field">
+                                <label class="label">Pseudo</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" placeholder="Votre pseudonyme" name="username" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Email</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="email" placeholder="Votre adresse email" name="email" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-envelope"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Mot de passe</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" placeholder="xxxxxx" name="password" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Confirmation de mot passe</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" placeholder="xxxxxx" name="confirmPassword" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <small>
+                                This site is protected by hCaptcha and its
+                                <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and
+                                <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
+                            </small>
+
+                            <div class="has-text-right-desktop has-text-centered mt-2">
+                                <button class="button is-primary h-captcha" data-sitekey="321158f8-9384-4da6-8cb3-d5400d7c6912" data-callback="onSubmit">S'inscrire</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        function onSubmit(token) {
+            document.getElementById('registerForm').submit();
+        }
+    </script>
+{% endblock %}

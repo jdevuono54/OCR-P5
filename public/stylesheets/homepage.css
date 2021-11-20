@@ -1,0 +1,39 @@
+.hero-body{
+    margin-top: -7%;
+    background: url('../images/homepage/background.webp') no-repeat center center fixed;
+    background-size: cover;
+}
+
+
+.fall  {
+    opacity: 0;
+    animation: new-item-animation .9s linear forwards;
+    animation-duration: 10s;
+}
+
+@keyframes new-item-animation {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        -moz-transform: rotate(16deg) translate(0px, 2000px);
+        -webkit-transform: rotate(16deg) translate(0px, 2000px);
+        -o-transform: rotate(16deg) translate(0px, 2000px);
+        -ms-transform: rotate(16deg) translate(0px, 2000px);
+        transform: rotate(16deg) translate(0px, 2000px);
+    }
+}
+
+.my-tile{
+    height: 400px;
+    max-height: 400px;
+}
+
+.fa-file-pdf{
+    font-size: 10rem !important;
+}
+
+.linkedin-logo, .github-logo{
+    max-width: 10rem;
+}

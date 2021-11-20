@@ -1,0 +1,271 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/stylesheets/blog/post.css"/>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <article class="tile is-child box">
+            <img class="post-picture mb-1" src="/upload/post/{{ post.picture }}" loading="lazy">
+
+            <h1 class="title">{{ post.title }}</h1>
+
+            <p class="subtitle is-size-6">
+                <i class="fas fa-user mt-2"></i> <a href="/profile/{{ post.author_id }}" class="has-texte-primary">{{ post.author }}</a>
+                <i class="fa fa-calendar-alt ml-2"></i> {{ post.created_at|date('d/m/Y') }}
+            </p>
+            <div class="post-content">
+                {{ post.content | raw }}
+
+                {% if post.updated_at is not null %}
+                    <p class="has-text-grey has-text-right mt-4">Modifié le {{ post.updated_at }}</p>
+                {% endif %}
+            </div>
+        </article>
+    </div>
+
+    {% for comment in post.comments %}
+        <div class="container mt-4 mb-4 comment" data-comment-id="{{ comment.id }}">
+            <div class="tile is-child box">
+                <div class="columns {{ comment.is_valid == 0 ? 'is-blur' : ''}}">
+                    <div class="column is-2">
+                        <a href="/profile/{{ comment.author_id }}" class="has-texte-primary"><p class="has-text-centered has-text-weight-bold">{{ comment.author }}</p></a>
+
+
+                        <div class="user-picture-container mt-3 mx-auto">
+                            <img class="user-picture" src="{{ comment.author_picture ? '/upload/profile-picture/' ~ comment.author_picture :'/images/default-user.png' }}" loading="lazy">
+                        </div>
+
+                        <p class="has-text-centered has-text-weight-bold mt-3 {{ comment.author_role == 2 ? 'has-text-primary' : 'has-text-danger' }}">{{ comment.author_role }}</p>
+                    </div>
+
+                    <div class="column is-10">
+                        <div class="mt-3 mb-3">
+                        {% if comment.is_valid == 0 %}
+                            <p class="has-text-centered is-size-5 has-text-weight-bold text-blur">Commentaire en attente d'approbation</p>
+                        {% endif %}
+
+                        <div>
+                            <p class="has-text-grey">Posté le {{ comment.created_at|date('d/m/Y') }}</p>
+                        </div>
+
+                            <div class="comment-content">
+                                {{ comment.content|raw }}
+                            </div>
+
+                            {% if comment.updated_at is not null %}
+                                <p class="has-text-grey">Modifié le {{ comment.updated_at }}</p>
+                            {% endif %}
+
+
+                            <div class="buttons comment-buttons is-pulled-right">
+                                {% if session.accessLevel >= 3 and comment.is_valid == 0 %}
+                                    <button class="button is-success is-small valid-comment">Valider</button>
+                                {% endif %}
+
+                                {% if comment.author_id == session.id or session.accessLevel >= 3 %}
+                                    <button class="button is-danger is-small delete-comment">Supprimer</button>
+                                {% endif %}
+
+                                {% if comment.author_id == session.id %}
+                                    <button class="button is-primary is-small edit-comment-btn">Modifier</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="container mb-4 mt-4">
+
+        {% include 'partial/pagination.html.twig' %}
+
+        <div class="tile is-child box mt-4">
+            <div class="columns">
+                {% if session.username is not defined %}
+                    <div class="column is-12">
+                        <p class="has-text-centered is-size-5 has-text-weight-bold">Vous devez être connecté pour ajouté un commentaire</p>
+                    </div>
+                {% else %}
+                    <div class="column is-1">
+                        <div class="user-picture-comment-container mt-3 mx-auto">
+                            <img class="user-picture" src="{{ session.picture ? '/upload/profile-picture/' ~ session.picture :'/images/default-user.png' }}" loading="lazy">
+                        </div>
+                    </div>
+
+                    <div class="column is-11">
+
+                        <form class="pl-0 pt-0" method="post" id="addCommentForm">
+                            <div class="field">
+                                <div class="quill-textarea" id="editor" style="height: 10vh;"></div>
+
+                                <textarea style="display: none" id="quill-form" name="content"></textarea>
+                            </div>
+
+                            <div class="has-text-right-desktop has-text-centered mt-2">
+                                <button class="button is-primary" id="form-comment-btn" data-sitekey="321158f8-9384-4da6-8cb3-d5400d7c6912" data-callback="onSubmitComment">Commenter</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: "Votre commentaire...",
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                    ['blockquote', 'code-block'],
+
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+                    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+
+                    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+
+                    ['clean']                                         // remove formatting button
+                ]
+            },
+        });
+
+        quill.on('text-change', () => {
+            $('#quill-form').val(quill.container.firstChild.innerHTML);
+            $('#editor').removeClass('is-invalid')
+        });
+
+        $('#addCommentForm').submit(function(e) {
+            const id = $(e.currentTarget).attr('data-comment-id');
+            const data = $(this).serializeArray();
+
+            e.preventDefault();
+
+            if($('#editor').text() == ''){
+                $('#editor').addClass('is-invalid');
+                return;
+            }
+
+            $('#form-button').prop("disabled", true).addClass('is-loading');
+
+            if(id !== undefined){
+                data.push({name:'id', value: id})
+            }
+
+            console.log(data);
+
+            $.ajax({
+                url: id === undefined ? "/blog/post/{{ post.id }}/addComment" : "/blog/comment/update",
+                type: 'post',
+                data: data,
+                statusCode: {
+                    403: () => {
+                        notify('danger', 'Vous devez être connecté pour posté un commentaire');
+                    }
+                }
+            }).done(response => {
+                if(!response.error){
+                    notify('success', response.message);
+
+                    setTimeout(reloadPage, 2000);
+                } else {
+                    notify('danger', response.message);
+
+                    $('#form-button').prop("disabled", false).removeClass('is-loading');
+                }
+            });
+        });
+
+        function reloadPage(){
+            location.reload();
+        }
+
+        function onSubmitComment() {
+            $('#addCommentForm').submit();
+        }
+
+        $(document).on('click','.delete-comment',e => {
+            const id = $(e.target).closest('.comment').data('comment-id');
+
+            if (window.confirm("Êtes vous sûr ?")) {
+                $.post("/admin/comment/delete", {id: id}).done(data => {
+                    if (!data.error) {
+                        notify('success', 'Commentaire supprimé !');
+
+                        setTimeout(reloadPage, 2000);
+                    } else {
+                        notify('danger', data.message);
+                    }
+                });
+            }
+        });
+
+
+        $(document).on('click','.valid-comment',e => {
+            const id = $(e.target).closest('.comment').data('comment-id');
+
+            if (window.confirm("Êtes vous sûr ?")) {
+                $.post( "/admin/comment/valid", { id: id} ).done(data => {
+                    if(!data.error){
+                        notify('success', 'Commentaire validé avec succès !');
+
+                        setTimeout(reloadPage, 2000);
+                    } else {
+                        notify('danger', 'Erreur lors de la validation');
+                    }
+                });
+            }
+        });
+
+        $(document).on('click','.edit-comment-btn',e => {
+            const $comment = $(e.target).closest('.comment');
+            const id = $comment.data('comment-id');
+            const commentContent = $comment.find('.comment-content').html().trim();
+            const cancelEdit = $(e.target).closest('.comment').find('.tile').hasClass("has-background-grey-light");
+            const $commentForm = $('#addCommentForm');
+
+            $('.tile').removeClass("has-background-grey-light");
+
+            if(!cancelEdit){
+                $(e.target).closest('.comment').find('.tile').addClass("has-background-grey-light");
+
+                $commentForm.data('comment-id', id);
+                $commentForm.attr('data-comment-id', id);
+
+                $('#form-comment-btn').text('Editer');
+
+                $('.ql-editor').html(commentContent);
+                $('#quill-form').val(commentContent);
+
+                $('html, body').animate({
+                    scrollTop: $($commentForm).offset().top
+                }, 1000);
+            } else {
+                $commentForm.removeData('comment-id');
+                $commentForm.removeAttr('data-comment-id');
+
+                $('.ql-editor').html('');
+                $('#quill-form').val('');
+
+                $('#form-comment-btn').text('Commenter');
+            }
+        });
+    </script>
+{% endblock %}
