@@ -4,6 +4,7 @@ namespace App\Utils\Orm;
 
 use Exception;
 use PDO;
+use PDOException;
 
 class ConnectionFactory
 {
@@ -24,7 +25,12 @@ class ConnectionFactory
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_STRINGIFY_FETCHES => false];
 
-        self::$pdo = new PDO('mysql:host='.$conf["host"].';dbname='.$conf["dbname"].'', $conf["user"], $conf["pass"], $options);
+        try {
+            self::$pdo = new PDO('mysql:host='.$conf["host"].';dbname='.$conf["dbname"].'', $conf["user"], $conf["pass"], $options);
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage() . "<br/>";
+            die();
+        }
         return self::$pdo;
     }
 
