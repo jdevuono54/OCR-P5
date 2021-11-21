@@ -48,9 +48,11 @@
                         <a class="navbar-item has-text-weight-bold dropdown-item" href="/profile/{{ session.id }}">
                             Profil
                         </a>
-                        <a class="navbar-item has-text-weight-bold dropdown-item" href="/admin">
-                            Administration
-                        </a>
+                        {% if session.accessLevel >= 3 %}
+                            <a class="navbar-item has-text-weight-bold dropdown-item" href="/admin">
+                                Administration
+                            </a>
+                        {% endif %}
                         <a class="navbar-item has-text-weight-bold dropdown-item" href="/auth/logout">
                             Déconnexion
                         </a>

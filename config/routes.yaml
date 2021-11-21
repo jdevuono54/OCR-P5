@@ -17,7 +17,7 @@ updateComment: [/blog/comment/update, App\Controller\BlogController.updateCommen
 
 validUser: [/auth/user/validation, App\Controller\AuthentificationController.validUser, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
 
-adminHome: [/admin, App\Controller\AdminController.showHome, !php/const App\Security\Authentification::ACCESS_LEVEL_USER, GET]
+adminHome: [/admin, App\Controller\AdminController.showHome, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
 
 adminUsers: [/admin/users, App\Controller\AdminController.showUsers, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
 getUsers: [/admin/users/ajax, App\Controller\AdminController.getUsers, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]

@@ -29,26 +29,24 @@
                 </li>
             </ul>
         </li>
-        {% if session.accessLevel >= 3 %}
-            <li>
-                <a href="#" class="has-text-white his-parent-menu">
-                    <span class="icon"><i class="fas fa-users"></i></span> Utilisateurs
-                </a>
+        <li>
+            <a href="#" class="has-text-white his-parent-menu">
+                <span class="icon"><i class="fas fa-users"></i></span> Utilisateurs
+            </a>
 
-                <ul class="is-hidden">
-                    <li>
-                        <a href="/admin/users" class="has-text-white">
-                            <span class="icon is-small"><i class="fas fa-list"></i></span> Voir les utilisateurs
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/admin/users/validation" class="has-text-white">
-                            <span class="icon is-small"><i class="fas fa-user-check"></i></span> Demande de validation
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        {% endif %} 
+            <ul class="is-hidden">
+                <li>
+                    <a href="/admin/users" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-list"></i></span> Voir les utilisateurs
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/users/validation" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-user-check"></i></span> Demande de validation
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </aside>
 
