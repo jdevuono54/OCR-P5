@@ -122,7 +122,7 @@ class BlogController extends Controller
 
             // Si un user est co on récup en plus ses commentaires non valides
             if(isset($_SESSION['id'])){
-                $postComments = array_merge($postComments, Comment::find([['is_valid', '=', '0'], ['id_user', '=', $_SESSION['id']]], [], true, $limit,$offset, []));
+                $postComments = array_merge($postComments, Comment::find([['id_post', '=' ,$id],    ['is_valid', '=', '0'], ['id_user', '=', $_SESSION['id']]], [], true, $limit,$offset, []));
                 $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '0'], ['id_user', '=', $_SESSION['id']]], ['COUNT(*) AS COUNT'], false)['COUNT'];
             } else {
                 $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false)['COUNT'];
