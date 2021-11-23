@@ -240,9 +240,9 @@ class BlogController extends Controller
         $uid = $this->http->post['id'] ?? '';
         $comment = Comment::first(["id", "=", $uid]);
 
-        if($comment == null){
-            $response['error'] = true;
-        } else {
+        $response['error'] = true;
+
+        if($comment != null){
             $response['error'] = false;
 
             $comment->is_valid = 1;

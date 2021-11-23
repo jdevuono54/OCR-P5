@@ -77,9 +77,10 @@ class Authentification
         // Si le mot de passe n'est pas bon on soulève un erreur
         if($this->verifyPassword($password, $dbPass) == false){
             throw new AuthentificationException("Mot de passe incorrect");
-        } else{ // Sinon on update la session
-            $this->updateSession($uid, $email, $username, $level, $picture);
         }
+
+        // Sinon on update la session
+        $this->updateSession($uid, $email, $username, $level, $picture);
     }
 
     /**

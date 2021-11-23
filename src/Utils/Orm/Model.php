@@ -157,22 +157,23 @@ abstract class Model
      */
     public function hasMany($modele, $foreign_key, $hydrate = true)
     {
-        // Si la clé primaire est renseignée
-        if ($this->attr[static::$primaryKey] != null) {
-            $query = Query::table($modele::$table);
-
-            // On éxecute la requête, la foreign key doit avoir comme valeur la clé primaire du model sur lequel on execute le hasmany
-            $query = $query->where($foreign_key, "=", $this->attr[static::$primaryKey])->get();
-
-            // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
-            if($hydrate){
-                return $modele::arrayToObject($query);
-            }
-
-            return $query;
-        } else { // Sinon on soulève une erreur
+        // Si la clé primaire n'est pas renseignée
+        if ($this->attr[static::$primaryKey] == null) {
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
+
         }
+
+        $query = Query::table($modele::$table);
+
+        // On éxecute la requête, la foreign key doit avoir comme valeur la clé primaire du model sur lequel on execute le hasmany
+        $query = $query->where($foreign_key, "=", $this->attr[static::$primaryKey])->get();
+
+        // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+        if($hydrate){
+            return $modele::arrayToObject($query);
+        }
+
+        return $query;
     }
 
     /**

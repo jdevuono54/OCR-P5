@@ -10,7 +10,7 @@ $(document).ready(() => {
         return cb();
       }
 
-      if (!key.indexOf(input)) { return 1 }
+      if (!key.indexOf(input)) { return 1; }
 
       input = (`${e.keyCode}`);
 

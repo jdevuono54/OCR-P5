@@ -71,11 +71,11 @@ class Router
         }
 
         // On explode la méthode et le controller
-        $explodeMethodAndController = explode('.', $this->routes[$routeAlias][1]);
+        $exploded = explode('.', $this->routes[$routeAlias][1]);
 
         // On récup le controller et la méthode
-        $controller = $explodeMethodAndController[0];
-        $method = $explodeMethodAndController[1];
+        $controller = $exploded[0];
+        $method = $exploded[1];
 
         // On instancie le controller & on appelle la méthode
         $wantedController = new $controller();
@@ -90,7 +90,7 @@ class Router
      */
     private function getRouteAlias($requestedRoute){
         // On explode la route ciblée
-        $requestedRouteExploded = explode('/', rtrim($requestedRoute, "/"));
+        $requestExplode = explode('/', rtrim($requestedRoute, "/"));
 
         // Pour chaque route
         foreach($this->routes as $alias => $route)
@@ -101,12 +101,12 @@ class Router
             $routeToCompareExploded = explode('/', rtrim($route[0], "/"));
 
             // Si on a pas le même nombre d'éléments on passe a la route suivante
-            if(count($routeToCompareExploded) != count($requestedRouteExploded)){
+            if(count($routeToCompareExploded) != count($requestExplode)){
                 continue;
             }
 
             // Pour chaque morceau de l'url
-            foreach ($requestedRouteExploded as $key => $portion){
+            foreach ($requestExplode as $key => $portion){
 
                 // Si la route contient un param format {id} on ne compare pas
                 if(strpos($routeToCompareExploded[$key], '{') !== false){
