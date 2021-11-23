@@ -13,14 +13,14 @@ class Mail
     /**
      * Permet d'envoyer un mail
      *
-     * @param $to
+     * @param  $for
      * @param $subject
      * @param $template
      * @param $context
      *
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
-    public static function send($to, $subject, $template, $context){
+    public static function send( $for, $subject, $template, $context){
         $twigManager = new TwigManager();
 
         // On parse la config pour récup le smtp
@@ -32,7 +32,7 @@ class Mail
         // On crée le mail avec toutes les données
         $email = (new TemplatedEmail())
             ->from(new Address($conf["mailer"]['default_mail']))
-            ->to(new Address($to))
+            ->to(new Address( $for))
             ->subject($subject)
             ->context($context)
             ->htmlTemplate($template);

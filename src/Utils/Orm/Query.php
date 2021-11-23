@@ -59,12 +59,7 @@ class Query
      */
     public function where($field,$operator,$val){
         // Si c'est la première fois qu'on utilise le where pour la query on ajoute where
-        if($this->where == null){
-            $this->where .= " where ";
-        }
-        else{ // sinon on remplace where par AND
-            $this->where .= " AND ";
-        }
+        $this->where .= !$this->where ? " where " : " AND ";
 
         // On concat + on stock les args
         $this->where .= $field." ".$operator." ?";

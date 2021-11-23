@@ -174,18 +174,14 @@ class AdminController extends Controller
 
         // Si le titre on le contenu est manquant on retourne une erreur
         if(empty($title) || empty($content)){
-            echo json_encode(['error' => true, 'message' => 'Titre ou contenu manquant']);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Titre ou contenu manquant']);
         }
 
         // Si l'image n'est pas valide on retourne une erreur
         try {
             ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
-            echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
         }
 
         try {
@@ -203,13 +199,10 @@ class AdminController extends Controller
 
             $post->insert();
         } catch (\Exception $e) {
-            echo json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
         }
 
-        echo json_encode(['error' => false, 'message' => 'Article créer avec succès']);
-        return 1;
+        return print_r(['error' => false, 'message' => 'Article créer avec succès']);
     }
 
     /**
@@ -280,10 +273,10 @@ class AdminController extends Controller
      * @return int
      */
     public function deleteArticle(){
-        $id = $this->http->post['id'] ?? '';
+        $uid = $this->http->post['id'] ?? '';
 
         // On récup l'article
-        $post = Post::first(["id", "=", $id]);
+        $post = Post::first(["id", "=", $uid]);
 
         // S'il n'existe pas on renvoi un message d'erreur sinon on le delete
         if($post == null){
@@ -292,15 +285,14 @@ class AdminController extends Controller
         } else {
             $response['error'] = false;
 
-            Comment::where(['id_post', "=", $id])->delete();
+            Comment::where(['id_post', "=", $uid])->delete();
 
             $post->delete();
         }
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($response);
-        return 1;
+        return print_r(json_encode($response));
     }
 
     /**
@@ -314,10 +306,10 @@ class AdminController extends Controller
      */
     public function showUpdateArticle(){
         $uriExploded = explode('/', $this->http->uri);
-        $id = array_pop($uriExploded);
+        $uid = array_pop($uriExploded);
 
         // On récup l'article
-        $post = Post::find(["id", "=", $id], [], false);
+        $post = Post::find(["id", "=", $uid], [], false);
 
         // S'il n'existe pas on retourne une erreur
         if($post == null){
@@ -336,18 +328,17 @@ class AdminController extends Controller
         header('Content-Type: application/json; charset=utf-8');
 
         $uriExploded = explode('/', $this->http->uri);
-        $id = array_pop($uriExploded);
+        $uid = array_pop($uriExploded);
 
         // On récup l'article
-        $post = Post::first(["id", "=", $id]);
+        $post = Post::first(["id", "=", $uid]);
 
         // S'il n'existe pas on retourne une erreur
         if($post == null){
             $response['error'] = true;
             $response['message'] = 'Article non trouvé';
 
-            echo json_encode($response);
-            return 1;
+            return print_r(json_encode($response));
         }
 
         $title = $this->http->post['title'] ?? '';
@@ -355,9 +346,7 @@ class AdminController extends Controller
 
         // Si le titre ou contenu est manquant  on retourne une erreur
         if(empty($title) || empty($content)){
-            echo json_encode(['error' => true, 'message' => 'Titre ou contenu manquant']);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Titre ou contenu manquant']);
         }
 
         // On valide l'image sinon on retourne une erreur
@@ -365,9 +354,7 @@ class AdminController extends Controller
             try {
                 ImageValidator::validate(Superglobals::files("image"));
             } catch (ImageValidationException $e){
-                echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
-
-                return 1;
+                return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
             }
         }
 
@@ -385,13 +372,10 @@ class AdminController extends Controller
 
             $post->update();
         } catch (\Exception $e) {
-            echo json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
         }
 
-        echo json_encode(['error' => false, 'message' => 'Article modifier avec succès']);
-        return 1;
+        return print_r(['error' => false, 'message' => 'Article modifier avec succès']);
     }
 
     /**

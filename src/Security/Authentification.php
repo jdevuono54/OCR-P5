@@ -13,7 +13,7 @@ class Authentification
     const ACCESS_LEVEL_ADMIN = 3;
 
     // Id de l'utilisateur connecté
-    private $id = null;
+    private $uid = null;
 
     // Email de l'utilisateur connecté
     private $email = null;
@@ -42,17 +42,20 @@ class Authentification
     /**
      * Permet d'update la session
      *
+     * @param $uid
+     * @param $email
      * @param $username
      * @param $level
+     * @param $picture
      */
-    protected function updateSession($id,$email, $username, $level, $picture){
-        $this->id = $id;
+    protected function updateSession($uid,$email, $username, $level, $picture){
+        $this->id = $uid;
         $this->email = $email;
         $this->username = $username;
         $this->accessLevel = $level;
         $this->picture = $picture;
 
-        Superglobals::setSession('id', $id);
+        Superglobals::setSession('id', $uid);
         Superglobals::setSession('email', $email);
         Superglobals::setSession('username', $username);
         Superglobals::setSession('accessLevel', $level);
@@ -70,12 +73,12 @@ class Authentification
      *
      * @throws AuthentificationException
      */
-    public function login(string $id,string $email,string $username, string $dbPass, string $password, int $level, $picture){
+    public function login(string $uid,string $email,string $username, string $dbPass, string $password, int $level, $picture){
         // Si le mot de passe n'est pas bon on soulève un erreur
         if($this->verifyPassword($password, $dbPass) == false){
             throw new AuthentificationException("Mot de passe incorrect");
         } else{ // Sinon on update la session
-            $this->updateSession($id, $email, $username, $level, $picture);
+            $this->updateSession($uid, $email, $username, $level, $picture);
         }
     }
 

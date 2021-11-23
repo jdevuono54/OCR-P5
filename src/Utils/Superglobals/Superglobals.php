@@ -14,10 +14,6 @@ class Superglobals
      */
     public static function server($key = null)
     {
-        if(!$key){
-            return $_SERVER;
-        }
-
         return $_SERVER[$key] ?? null;
     }
 
@@ -50,10 +46,6 @@ class Superglobals
      */
     public static function files($key = null)
     {
-        if(!$key){
-            return $_FILES;
-        }
-
         return $_FILES[$key] ?? null;
     }
 

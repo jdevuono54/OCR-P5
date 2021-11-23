@@ -173,13 +173,13 @@ class AuthentificationController extends Controller
      * Permet de valider un user
      */
     public function validUser(){
-        $id = $this->http->post['id'] ?? '';
-        $user = User::first(["id", "=", $id]);
+        $uid = $this->http->post['id'] ?? '';
+        $user = User::first(["id", "=", $uid]);
 
-        // Si l'user n'existe pas on met la réponse en mode erreur sinon on update l'user
-        if($user == null){
-            $response['error'] = true;
-        } else {
+        $response['error'] = true;
+
+        // Si l'user existe on met la réponse en mode ok et on update l'user
+        if($user != null){
             $response['error'] = false;
 
             $user->is_valid = 1;
@@ -188,6 +188,6 @@ class AuthentificationController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($response);
+        return print_r(json_encode($response));
     }
 }

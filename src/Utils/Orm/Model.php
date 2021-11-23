@@ -41,13 +41,14 @@ abstract class Model
         // Si c'est une méthode on la retourne
         if (method_exists(static::class, $name)) {
             return $this->$name();
-        } else { // Si c'est un attribut, on le renvoi s'il existe sinon on soulève une erreur
-            if (array_key_exists($name, $this->attr)) {
-                return $this->attr[$name];
-            } else {
-                throw new AttributeNotExistException("L'attribut $name n'existe pas");
-            }
         }
+
+        // Si ce n'est pas un attribut on soulève une erreur
+        if (!array_key_exists($name, $this->attr)) {
+            throw new AttributeNotExistException("L'attribut $name n'existe pas");
+        }
+
+        return $this->attr[$name];
     }
 
     /**
@@ -63,17 +64,17 @@ abstract class Model
 
     public function delete()
     {
-        if (static::$table != null) {
-            if ($this->attr[static::$primaryKey] != null) {
-                $query = Query::table(static::$table);
-                $query->where(static::$primaryKey, "=", $this->attr[static::$primaryKey]);
-                $query->delete();
-            } else {
-                throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide pour supprimé une ligne");
-            }
-        } else {
+        if (static::$table == null) {
             throw new EmptyTableNameException("Le nom de la table doit être renseigné");
         }
+
+        if ($this->attr[static::$primaryKey] == null) {
+            throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide pour supprimé une ligne");
+        }
+
+        $query = Query::table(static::$table);
+        $query->where(static::$primaryKey, "=", $this->attr[static::$primaryKey]);
+        $query->delete();
     }
 
     /**
@@ -83,14 +84,14 @@ abstract class Model
      */
     public function insert()
     {
-        // Si la table est renseignée on fait l'insert
-        if (static::$table != null) {
-            $query = Query::table(static::$table);
-
-            $this->attr[static::$primaryKey] = $query->insert($this->attr);
-        } else { // Sinon on soulève une erreur
+        // Si la table n'est pas renseignée on soulève une erreur
+        if (static::$table == null) {
             throw new EmptyTableNameException("Le nom de la table doit être renseigné");
         }
+
+        $query = Query::table(static::$table);
+
+        $this->attr[static::$primaryKey] = $query->insert($this->attr);
     }
 
     /**
@@ -136,9 +137,9 @@ abstract class Model
             // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
             if($hydrate){
                 return $modele::arrayToObject($query)[0];
-            } else {
-                return $query[0];
             }
+
+            return $query[0];
         } else { // Sinon on soulève une erreur
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
         }
@@ -166,9 +167,9 @@ abstract class Model
             // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
             if($hydrate){
                 return $modele::arrayToObject($query);
-            } else {
-                return $query;
             }
+
+            return $query;
         } else { // Sinon on soulève une erreur
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
         }
@@ -188,9 +189,9 @@ abstract class Model
         // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
         if($hydrate){
             return self::arrayToObject($query);
-        } else {
-            return $query;
         }
+
+        return $query;
     }
 
     /**
@@ -226,9 +227,9 @@ abstract class Model
         // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
         if($hydrate){
             return self::arrayToObject($query);
-        } else {
-            return $query;
         }
+
+        return $query;
     }
 
     /**
@@ -263,21 +264,20 @@ abstract class Model
     {
         // Si le critère est un int c'est que c'est l'id
         if (is_int($criteria)) {
-            $query = $query->where(static::$primaryKey, "=", $criteria);
+            return $query->where(static::$primaryKey, "=", $criteria);
         }
 
         // Si c'est un tableau
         if (is_array($criteria)) {
             // Si y'a qu'un seul critère on construit la requête avec le critère
             if (!is_array($criteria[0])) {
-                $query = $query->where($criteria[0], $criteria[1], $criteria[2]);
-            } else {
-                // Si y'en a plusieurs on ajoute les critères au fur à mesure
-                foreach ($criteria as $crit) {
-                    $query = $query->where($crit[0], $crit[1], $crit[2]);
-                }
+                return $query->where($criteria[0], $criteria[1], $criteria[2]);
             }
 
+            // Si y'en a plusieurs on ajoute les critères au fur à mesure
+            foreach ($criteria as $crit) {
+                $query = $query->where($crit[0], $crit[1], $crit[2]);
+            }
         }
 
         return $query;

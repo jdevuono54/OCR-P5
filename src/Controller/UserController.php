@@ -23,10 +23,10 @@ class UserController extends Controller
      */
     public function showProfile(){
         $uriExploded = explode('/', $this->http->uri);
-        $id = array_pop($uriExploded);
+        $uid = array_pop($uriExploded);
 
         // On récup l'user
-        $user = User::first(['id', '=', $id], ['id', 'username', 'is_valid', 'id_role', 'picture'], false);
+        $user = User::first(['id', '=', $uid], ['id', 'username', 'is_valid', 'id_role', 'picture'], false);
 
         // S'il n'existe pas on renvoi sur la page par défaut
         if(!$user){
@@ -34,8 +34,8 @@ class UserController extends Controller
         }
 
         // On récup le nombre d'articles postés par l'user et le nombre de ses commentaires valides
-        $articlesCount = Post::find([['id_user', '=', $id]], ['COUNT(*) AS COUNT'], false, 0, 0, [])[0]['COUNT'];
-        $commentsCount = Comment::find([['id_user', '=', $id], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false, 0, 0, [])[0]['COUNT'];
+        $articlesCount = Post::find([['id_user', '=', $uid]], ['COUNT(*) AS COUNT'], false, 0, 0, [])[0]['COUNT'];
+        $commentsCount = Comment::find([['id_user', '=', $uid], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false, 0, 0, [])[0]['COUNT'];
 
         $user['role_name'] = $user['id_role'] == 2 ? 'Membre' : 'Administrateur';
         $user['post_count'] = $articlesCount;
@@ -56,31 +56,25 @@ class UserController extends Controller
         try {
             ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
-            echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
         }
 
         // On récup l'id de l'user
         $uriExploded = explode('/', $this->http->uri);
         end($uriExploded);
-        $idUser = prev($uriExploded);
+        $uidUser = prev($uriExploded);
 
         // Si l'id de l'user connecté ne correspond pas a celui du commentaire on renvoi une erreur
-        if($idUser != Superglobals::session('id')){
-            echo json_encode(['error' => true, 'message' => 'Vous ne pouvez pas éditer l\'image de quelqu\'un d\'autre']);
-
-            return 1;
+        if($uidUser != Superglobals::session('id')){
+            return print_r(['error' => true, 'message' => 'Vous ne pouvez pas éditer l\'image de quelqu\'un d\'autre']);
         }
 
         // On récup l'user
-        $user = User::first(['id', '=', $idUser]);
+        $user = User::first(['id', '=', $uidUser]);
 
         // Si l'user n'existe pas on renvoi une erreur
         if($user == null){
-            echo json_encode(['error' => true, 'message' => 'Utilisateur non trouvé']);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Utilisateur non trouvé']);
         }
 
         try {
@@ -94,12 +88,9 @@ class UserController extends Controller
 
             $user->update();
         } catch (\Exception $e) {
-            echo json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
-
-            return 1;
+            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
         }
 
-        echo json_encode(['error' => false, 'message' => 'Image modifié avec succès']);
-        return 1;
+        return print_r(['error' => false, 'message' => 'Image modifié avec succès']);
     }
 }

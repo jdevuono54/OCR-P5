@@ -13,7 +13,7 @@ class ImageValidator
      */
     public static function validate($image){
         // Liste des formats acceptés
-        $allowed_image_extension = ["png", "jpg", "jpeg", "gif", "webp"];
+        $allowed_extension = ["png", "jpg", "jpeg", "gif", "webp"];
 
         // On récupère l'extension du fichier envoyé
         $file_extension = pathinfo($image["name"], PATHINFO_EXTENSION);
@@ -22,7 +22,7 @@ class ImageValidator
         if (!file_exists($image["tmp_name"])) {
             throw new ImageValidationException("L'image est vide");
         } // Si le format n'est pas valide on throw une erreur
-        else if (!in_array($file_extension, $allowed_image_extension)) {
+        else if (!in_array($file_extension, $allowed_extension)) {
             throw new ImageValidationException("Format d'image incorrect");
         } // Si le poid de l'image est supérieur a 8mo on throw une erreur
         else if ($image["size"] > 8000000) {

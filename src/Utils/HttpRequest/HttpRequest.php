@@ -23,8 +23,8 @@ class HttpRequest
         $this->scriptName = Superglobals::server("SCRIPT_NAME");
         $this->root = dirname(Superglobals::server("SCRIPT_NAME"));
         $this->method = Superglobals::server("REQUEST_METHOD");
-        $this->get = $_GET;
-        $this->post = $_POST;
+        $this->get = $_GET ?? null;
+        $this->post = $_POST ?? null;
 
         if(Superglobals::server("REQUEST_URI")){
             $this->uri = Superglobals::server('REQUEST_URI');

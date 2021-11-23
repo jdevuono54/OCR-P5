@@ -96,14 +96,14 @@ class BlogController extends Controller
      */
     public function showPost(){
         $uriExploded = explode('/', $this->http->uri);
-        $id = array_pop($uriExploded);
+        $uid = array_pop($uriExploded);
 
         $page = $this->http->get['p'] ?? 1;
         $limit = 8;
         $offset = ($page - 1) * $limit;
 
         // On récup un post
-        $post = Post::first(["id", "=", $id], []);
+        $post = Post::first(["id", "=", $uid], []);
 
         // S'il n'existe pas on renvoi une erreur
         if($post == null){
@@ -115,18 +115,18 @@ class BlogController extends Controller
 
         // Si on est admin on récup les commentaires en attente de validation de tt le monde
         if(Superglobals::session('accessLevel') >= Authentification::ACCESS_LEVEL_ADMIN){
-            $postComments = Comment::find(['id_post', '=' ,$id], [], true, $limit,$offset, []);
-            $postCommentsCount = Comment::first(['id_post', '=' ,$id], ['COUNT(*) AS COUNT'], false)['COUNT'];
+            $postComments = Comment::find(['id_post', '=' ,$uid], [], true, $limit,$offset, []);
+            $postCommentsCount = Comment::first(['id_post', '=' ,$uid], ['COUNT(*) AS COUNT'], false)['COUNT'];
         } else {
             // On récup les commentaires valides
-            $postComments = Comment::find([['id_post', '=' ,$id], ['is_valid', '=', '1']], [], true, $limit,$offset, []);
+            $postComments = Comment::find([['id_post', '=' ,$uid], ['is_valid', '=', '1']], [], true, $limit,$offset, []);
 
             // Si un user est co on récup en plus ses commentaires non valides
             if(Superglobals::session('id')){
-                $postComments = array_merge($postComments, Comment::find([['id_post', '=' ,$id],    ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], [], true, $limit,$offset, []));
-                $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], ['COUNT(*) AS COUNT'], false)['COUNT'];
+                $postComments = array_merge($postComments, Comment::find([['id_post', '=' ,$uid],    ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], [], true, $limit,$offset, []));
+                $postCommentsCount = Comment::first([['id_post', '=' ,$uid], ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], ['COUNT(*) AS COUNT'], false)['COUNT'];
             } else {
-                $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false)['COUNT'];
+                $postCommentsCount = Comment::first([['id_post', '=' ,$uid], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false)['COUNT'];
             }
         }
 
@@ -188,29 +188,27 @@ class BlogController extends Controller
 
         // Si le contenu est vide on retourne une erreur
         if(empty($content)){
-            echo json_encode(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
-            return 1;
+            return print_r(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
         }
 
         $uriExploded = explode('/', $this->http->uri);
 
         end($uriExploded);
-        $idPost = prev($uriExploded);
+        $uidPost = prev($uriExploded);
 
         // On récup le post
-        $post = Post::first(["id", "=", $idPost], []);
+        $post = Post::first(["id", "=", $uidPost], []);
 
         // Si le post n'existe pas on retourne une erreur
         if($post == null){
-            echo json_encode(['error' => true, 'message' => 'Article non trouvé']);
-            return 1;
+            return print_r(['error' => true, 'message' => 'Article non trouvé']);
         }
 
         // On crée le post
         $comment = new Comment();
 
         $comment->content = $content;
-        $comment->id_post = $idPost;
+        $comment->id_post = $uidPost;
         $comment->id_user = Superglobals::session('id');
         $comment->is_valid = 0;
 
@@ -221,8 +219,7 @@ class BlogController extends Controller
 
         $comment->insert();
 
-        echo json_encode(['error' => false, 'message' => "Commentaire en attente d'approbation"]);
-        return 1;
+        return print_r(['error' => false, 'message' => "Commentaire en attente d'approbation"]);
     }
 
     /**
@@ -240,8 +237,8 @@ class BlogController extends Controller
      * Permet de valider un commentaire
      */
     public function validComment(){
-        $id = $this->http->post['id'] ?? '';
-        $comment = Comment::first(["id", "=", $id]);
+        $uid = $this->http->post['id'] ?? '';
+        $comment = Comment::first(["id", "=", $uid]);
 
         if($comment == null){
             $response['error'] = true;
@@ -255,7 +252,7 @@ class BlogController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($response);
+        return print_r(json_encode($response));
     }
 
     /**
@@ -266,25 +263,22 @@ class BlogController extends Controller
     public function updateComment(){
         header('Content-Type: application/json; charset=utf-8');
 
-        $id = $this->http->post['id'] ?? '';
+        $uid = $this->http->post['id'] ?? '';
         $content = $this->http->post['content'] ?? '';
 
         // Si le contenu est vide on retourne une erreur
         if(empty($content)){
-            echo json_encode(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
-            return 1;
+            return print_r(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
         }
 
         // On récup le commentaire
-        $comment = Comment::first(["id", "=", $id]);
+        $comment = Comment::first(["id", "=", $uid]);
 
         // S'il n'existe pas on retourne une erreur
         if($comment == null){
-            echo json_encode(['error' => true, 'message' => 'Commentaire non trouvé']);
-            return 1;
+            return print_r(['error' => true, 'message' => 'Commentaire non trouvé']);
         } if(($comment->id_user != Superglobals::session('id'))){ // Si ce n'est pas le commentaire de l'user co on retourne une erreur
-            echo json_encode(['error' => true, 'message' => 'Vous ne pouvez pas modifié ce commentaire']);
-            return 1;
+            return print_r(['error' => true, 'message' => 'Vous ne pouvez pas modifié ce commentaire']);
         }
 
         $comment->content = $content;
@@ -297,7 +291,7 @@ class BlogController extends Controller
 
         $comment->update();
 
-        echo json_encode(['error' => false, 'message' => 'Commentaire edité avec succès']);
+        return print_r(['error' => false, 'message' => 'Commentaire edité avec succès']);
     }
 
     /**
@@ -306,9 +300,9 @@ class BlogController extends Controller
      * @return int
      */
     public function deleteComment(){
-        $id = $this->http->post['id'] ?? '';
+        $uid = $this->http->post['id'] ?? '';
 
-        $comment = Comment::first(["id", "=", $id]);
+        $comment = Comment::first(["id", "=", $uid]);
 
         if($comment == null){
             $response['error'] = true;
@@ -324,7 +318,6 @@ class BlogController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($response);
-        return 1;
+        return print_r(json_encode($response));
     }
 }

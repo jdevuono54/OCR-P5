@@ -58,15 +58,16 @@ class Router
         $requestedRoute = $this->httpRequest->baseUri;
         $routeAlias = $this->getRouteAlias($requestedRoute);
 
-        // Si l'alias existe on vérifie que l'utilisateur à les droits
-        if ($routeAlias) {
-            if (!$this->auth->checkAccessRight($this->routes[$routeAlias][2])) {
-
-                // Si il n'a pas les droits on show la page de 403
-                return $this->showErrorWebpage(403);
-            }
-        } else { // Sinon on affiche la 404
+        // Si l'alias n'existe pas on affiche la 404
+        if (!$routeAlias) {
             return $this->showErrorWebpage(404);
+        }
+
+        // on vérifie que l'utilisateur à les droits
+        if (!$this->auth->checkAccessRight($this->routes[$routeAlias][2])) {
+
+            // Si il n'a pas les droits on show la page de 403
+            return $this->showErrorWebpage(403);
         }
 
         // On explode la méthode et le controller
@@ -139,26 +140,27 @@ class Router
      */
     public function getUrl($alias, array $paramList = [])
     {
-        // Si l'alias existe
-        if (key_exists($alias, $this->routes)) {
-            // On récup l'url
-            $url = $this->httpRequest->scriptName . $this->routes[$alias][0];
-
-            // Si il n'y a pas de param on retourne l'url
-            if ($paramList == null) {
-                return $url;
-            } else { // Sinon on construit l'url avec les params
-                $url = $url . "?";
-
-                foreach ($paramList as $key => $value) {
-                    $url = $url . $key . "=" . $value . "&";
-                }
-
-                return substr($url, 0, -1);
-            }
-        } else {
+        // Si l'alias n'existe pas
+        if(!key_exists($alias, $this->routes)){
             throw new \Exception("L'alias n'existe pas");
         }
+
+        // On récup l'url
+        $url = $this->httpRequest->scriptName . $this->routes[$alias][0];
+
+        // Si il n'y a pas de param on retourne l'url
+        if ($paramList == null) {
+            return $url;
+        }
+
+        // Sinon on construit l'url avec les params
+        $url = $url . "?";
+
+        foreach ($paramList as $key => $value) {
+            $url = $url . $key . "=" . $value . "&";
+        }
+
+        return substr($url, 0, -1);
     }
 
     /**
