@@ -35,7 +35,12 @@ composer i
 * Créer une base de données pour le projet, puis importer le script SQL présent dans
 
 ```bash
-/UML/ocr_p5.sql
+/bdd/ocr_p5.sql
+```
+
+Une liste de comptes test ainsi que les mots de passes sont disponible dans le fichier
+```bash
+/bdd/accounts.txt
 ```
 
 ### Étape 4
