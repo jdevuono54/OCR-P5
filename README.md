@@ -1,5 +1,7 @@
 # Blog PHP
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ed0b00cd65804ad786d11115c1c8bd8e)](https://www.codacy.com/gh/jdevuono54/OCR-P5/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jdevuono54/OCR-P5&amp;utm_campaign=Badge_Grade)
+
 ## Introduction
 
 Le projet est donc de développer votre blog professionnel. Ce site web se décompose en deux grands groupes de pages :
