@@ -1,26 +1,26 @@
 .user-picture-container {
-    width: 100px;
-    height: 100px;
-    overflow: hidden;
-    border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 .user-picture {
-    width: auto;
-    height: 100%;
-    -o-object-fit: cover;
-    object-fit: cover;
-    -o-object-position: 50% 40%;
-    object-position: 50% 40%;
+  width: auto;
+  height: 100%;
+  object-fit: cover;
+  object-fit: cover;
+  object-position: 50% 40%;
+  object-position: 50% 40%;
 }
 
-.child-tile{
-    height: 250px;
-    margin-top: 40vh;
-    transform: translateY(-40%);
+.child-tile {
+  height: 250px;
+  margin-top: 40vh;
+  transform: translateY(-40%);
 }
 
-.count-icon{
-    text-align: center;
-    font-size: 100px;
+.count-icon {
+  text-align: center;
+  font-size: 100px;
 }

@@ -1,12 +1,13 @@
-.child-tile{
-    height: 250px;
+.child-tile {
+  height: 250px;
 }
 
-.count-icon{
-    text-align: center;
-    font-size: 100px;
+.count-icon {
+  text-align: center;
+  font-size: 100px;
 }
-.rows{
-    display: flex;
-    flex-direction: column;
+
+.rows {
+  display: flex;
+  flex-direction: column;
 }

@@ -1,32 +1,37 @@
-.navbar, .side-panel, .navbar-menu.is-active, .navbar-dropdown{
-    background-color: #44556b !important;
-}
-.navbar-item, .navbar-link:not(.is-arrowless)::after{
-    color: white !important;
-    border-color: white !important;
+.navbar,
+.side-panel,
+.navbar-menu.is-active,
+.navbar-dropdown {
+  background-color: #44556b !important;
 }
 
-.navbar-logo{
-    content: url("../../images/logo-light.webp");
-    max-height: 55px;
+.navbar-item,
+.navbar-link:not(.is-arrowless)::after {
+  color: white !important;
+  border-color: white !important;
+}
+
+.navbar-logo {
+  content: url("../../images/logo-light.webp");
+  max-height: 55px;
 }
 
 .user-profile-picture-container {
-    width: 20px;
-    height: 20px;
-    overflow: hidden;
-    border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 .user-profile-picture {
-    width: auto;
-    height: 100%;
-    -o-object-fit: cover;
-    object-fit: cover;
-    -o-object-position: 50% 40%;
-    object-position: 50% 40%;
+  width: auto;
+  height: 100%;
+  object-fit: cover;
+  object-fit: cover;
+  object-position: 50% 40%;
+  object-position: 50% 40%;
 }
 
-.is-invalid{
-    border-color: red !important;
+.is-invalid {
+  border-color: red !important;
 }
