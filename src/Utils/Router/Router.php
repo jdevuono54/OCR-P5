@@ -98,10 +98,10 @@ class Router
             $match = true;
 
             // On explode la route qu'on check
-            $routeToCompareExploded = explode('/', rtrim($route[0], "/"));
+            $candidatExploded = explode('/', rtrim($route[0], "/"));
 
             // Si on a pas le même nombre d'éléments on passe a la route suivante
-            if(count($routeToCompareExploded) != count($requestExplode)){
+            if(count($candidatExploded) != count($requestExplode)){
                 continue;
             }
 
@@ -109,12 +109,12 @@ class Router
             foreach ($requestExplode as $key => $portion){
 
                 // Si la route contient un param format {id} on ne compare pas
-                if(strpos($routeToCompareExploded[$key], '{') !== false){
+                if(strpos($candidatExploded[$key], '{') !== false){
                     continue;
                 }
 
                 // Si la portion de l'url cible & celle qu'on analyse ne corresponde pas on indique que ça ne match pas
-                if($portion != $routeToCompareExploded[$key]){
+                if($portion != $candidatExploded[$key]){
                     $match = false;
                 }
             }

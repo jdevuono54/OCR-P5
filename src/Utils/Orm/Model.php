@@ -243,14 +243,14 @@ abstract class Model
      */
     public static function where($criteria)
     {
-        // Si la table est renseigne on construit le where
-        if (static::$table != null) {
-            $query = Query::table(static::$table);
-
-            return self::constructQueryWithCriteria($query, $criteria);
-        } else { // Sinon on soulève une erreur
+        // Si la table n'est pas renseigné on soulève une erreur
+        if (static::$table == null) {
             throw new EmptyTableNameException("Le nom de la table doit être renseigné");
         }
+
+        $query = Query::table(static::$table);
+
+        return self::constructQueryWithCriteria($query, $criteria);
     }
 
     /**

@@ -4,7 +4,7 @@ use App\Utils\Orm\ConnectionFactory;
 use App\Utils\Router\Router;
 use App\Utils\Superglobals\Superglobals;
 
-require __DIR__.'/../vendor/autoload.php';
+require '../vendor/autoload.php';
 
 if(!Superglobals::checkSESSION()){
     session_start();

@@ -39,10 +39,10 @@ class ConnectionFactory
      * @throws Exception
      */
     public static function getConnection(){
-        if(self::$pdo != null){
-            return self::$pdo;
-        }else{
+        if(self::$pdo == null){
             throw new Exception("Il faut configurer la connexion");
         }
+
+        return self::$pdo;
     }
 }
