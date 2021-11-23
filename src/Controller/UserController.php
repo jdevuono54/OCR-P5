@@ -8,6 +8,7 @@ use App\Model\Post;
 use App\Model\User;
 use App\Utils\Controller\Controller;
 use App\Utils\Image\ImageValidator;
+use App\Utils\Superglobals\Superglobals;
 
 class UserController extends Controller
 {
@@ -53,7 +54,7 @@ class UserController extends Controller
 
         // On check si l'image est valide sinon on renvoi une erreur
         try {
-            ImageValidator::validate($_FILES["image"]);
+            ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
             echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
 
@@ -66,7 +67,7 @@ class UserController extends Controller
         $idUser = prev($uriExploded);
 
         // Si l'id de l'user connecté ne correspond pas a celui du commentaire on renvoi une erreur
-        if($idUser != $_SESSION['id']){
+        if($idUser != Superglobals::session('id')){
             echo json_encode(['error' => true, 'message' => 'Vous ne pouvez pas éditer l\'image de quelqu\'un d\'autre']);
 
             return 1;
@@ -85,11 +86,11 @@ class UserController extends Controller
         try {
             // On stock l'image en webp avec un id unique
             $imageName = uniqid().'.webp';
-            imagewebp(imagecreatefromstring(file_get_contents($_FILES["image"]["tmp_name"])), $_SERVER['DOCUMENT_ROOT'].'/../public/upload/profile-picture/'.$imageName);
+            imagewebp(imagecreatefromstring(file_get_contents(Superglobals::files("image")["tmp_name"])), Superglobals::server("DOCUMENT_ROOT").'/../public/upload/profile-picture/'.$imageName);
 
             // On update l'user
             $user->picture = $imageName;
-            $_SESSION['picture'] = $imageName;
+            Superglobals::setSession('picture', $imageName);
 
             $user->update();
         } catch (\Exception $e) {

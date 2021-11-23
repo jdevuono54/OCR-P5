@@ -2,6 +2,7 @@
 
 namespace App\Utils\Twig;
 
+use App\Utils\Superglobals\Superglobals;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
@@ -18,8 +19,8 @@ class TwigManager
             'debug' => true
         ]);
 
-        $this->twig->addGlobal('session', $_SESSION);
-        $this->twig->addGlobal('uri', $_SERVER['REQUEST_URI']);
+        $this->twig->addGlobal('session', Superglobals::session());
+        $this->twig->addGlobal('uri', Superglobals::server('REQUEST_URI'));
         $this->twig->addExtension(new DebugExtension());
     }
 

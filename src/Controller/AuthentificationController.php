@@ -27,7 +27,7 @@ class AuthentificationController extends Controller
     /**
      * Route qui permet d'afficher la page de login
      */
-    public function showLogin($options){
+    public function showLogin(){
         return $this->twigResponse('authentification/login.html.twig', ['footer' => false]);
     }
 

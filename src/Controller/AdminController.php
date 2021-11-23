@@ -9,6 +9,7 @@ use App\Model\Role;
 use App\Model\User;
 use App\Utils\Controller\Controller;
 use App\Utils\Image\ImageValidator;
+use App\Utils\Superglobals\Superglobals;
 
 class AdminController extends Controller
 {
@@ -90,7 +91,7 @@ class AdminController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($data);
+        print_r(json_encode($data));
     }
 
     /**
@@ -144,7 +145,7 @@ class AdminController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($data);
+        print_r(json_encode($data));
     }
 
     /**
@@ -180,7 +181,7 @@ class AdminController extends Controller
 
         // Si l'image n'est pas valide on retourne une erreur
         try {
-            ImageValidator::validate($_FILES["image"]);
+            ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
             echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
 
@@ -190,7 +191,7 @@ class AdminController extends Controller
         try {
             // On stock l'image en webp avec un id unique
             $imageName = uniqid().'.webp';
-            imagewebp(imagecreatefromstring(file_get_contents($_FILES["image"]["tmp_name"])), $_SERVER['DOCUMENT_ROOT'].'/../public/upload/post/'.$imageName);
+            imagewebp(imagecreatefromstring(file_get_contents(Superglobals::files("image")["tmp_name"])), Superglobals::server("DOCUMENT_ROOT").'/../public/upload/post/'.$imageName);
 
             // On crée le post
             $post = new Post();
@@ -198,7 +199,7 @@ class AdminController extends Controller
             $post->title = $this->http->post['title'];
             $post->content = $this->http->post['content'];
             $post->picture = $imageName;
-            $post->id_user = $_SESSION['id'];
+            $post->id_user = Superglobals::session('id');
 
             $post->insert();
         } catch (\Exception $e) {
@@ -270,12 +271,11 @@ class AdminController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($data);
-        return 1;
+        print_r(json_encode($data));
     }
 
     /**
-     * Permet de delete un article
+     * Permet de  un article
      *
      * @return int
      */
@@ -291,6 +291,8 @@ class AdminController extends Controller
             $response['message'] = 'Article non trouvé';
         } else {
             $response['error'] = false;
+
+            Comment::where(['id_post', "=", $id])->delete();
 
             $post->delete();
         }
@@ -359,9 +361,9 @@ class AdminController extends Controller
         }
 
         // On valide l'image sinon on retourne une erreur
-        if($_FILES["image"]['name']){
+        if(Superglobals::files("image")['name']){
             try {
-                ImageValidator::validate($_FILES["image"]);
+                ImageValidator::validate(Superglobals::files("image"));
             } catch (ImageValidationException $e){
                 echo json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
 
@@ -374,9 +376,9 @@ class AdminController extends Controller
             $post->title = $this->http->post['title'];
             $post->content = $this->http->post['content'];
 
-            if($_FILES["image"]['name']){
+            if(Superglobals::files("image")['name']){
                 $imageName = uniqid().'.webp';
-                imagewebp(imagecreatefromstring(file_get_contents($_FILES["image"]["tmp_name"])), $_SERVER['DOCUMENT_ROOT'].'/../public/upload/post/'.$imageName);
+                imagewebp(imagecreatefromstring(file_get_contents(Superglobals::files("image")["tmp_name"])), Superglobals::server("DOCUMENT_ROOT").'/../public/upload/post/'.$imageName);
 
                 $post->picture = $imageName;
             }
@@ -440,6 +442,6 @@ class AdminController extends Controller
 
         header('Content-Type: application/json; charset=utf-8');
 
-        echo json_encode($data);
+        print_r(json_encode($data));
     }
 }

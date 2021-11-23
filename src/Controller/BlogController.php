@@ -7,6 +7,7 @@ use App\Model\Post;
 use App\Security\Authentification;
 use App\Utils\Controller\Controller;
 use App\Utils\Mail\Mail;
+use App\Utils\Superglobals\Superglobals;
 
 class BlogController extends Controller
 {
@@ -113,7 +114,7 @@ class BlogController extends Controller
         $author = $post->author();
 
         // Si on est admin on récup les commentaires en attente de validation de tt le monde
-        if(isset($_SESSION['accessLevel']) && $_SESSION['accessLevel'] >= Authentification::ACCESS_LEVEL_ADMIN){
+        if(Superglobals::session('accessLevel') >= Authentification::ACCESS_LEVEL_ADMIN){
             $postComments = Comment::find(['id_post', '=' ,$id], [], true, $limit,$offset, []);
             $postCommentsCount = Comment::first(['id_post', '=' ,$id], ['COUNT(*) AS COUNT'], false)['COUNT'];
         } else {
@@ -121,9 +122,9 @@ class BlogController extends Controller
             $postComments = Comment::find([['id_post', '=' ,$id], ['is_valid', '=', '1']], [], true, $limit,$offset, []);
 
             // Si un user est co on récup en plus ses commentaires non valides
-            if(isset($_SESSION['id'])){
-                $postComments = array_merge($postComments, Comment::find([['id_post', '=' ,$id],    ['is_valid', '=', '0'], ['id_user', '=', $_SESSION['id']]], [], true, $limit,$offset, []));
-                $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '0'], ['id_user', '=', $_SESSION['id']]], ['COUNT(*) AS COUNT'], false)['COUNT'];
+            if(Superglobals::session('id')){
+                $postComments = array_merge($postComments, Comment::find([['id_post', '=' ,$id],    ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], [], true, $limit,$offset, []));
+                $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '0'], ['id_user', '=', Superglobals::session('id')]], ['COUNT(*) AS COUNT'], false)['COUNT'];
             } else {
                 $postCommentsCount = Comment::first([['id_post', '=' ,$id], ['is_valid', '=', '1']], ['COUNT(*) AS COUNT'], false)['COUNT'];
             }
@@ -210,11 +211,11 @@ class BlogController extends Controller
 
         $comment->content = $content;
         $comment->id_post = $idPost;
-        $comment->id_user = $_SESSION['id'];
+        $comment->id_user = Superglobals::session('id');
         $comment->is_valid = 0;
 
         // Si l'user co est admin on valide directement le commentaire
-        if($_SESSION['accessLevel'] >= Authentification::ACCESS_LEVEL_ADMIN){
+        if(Superglobals::session('accessLevel') >= Authentification::ACCESS_LEVEL_ADMIN){
             $comment->is_valid = 1;
         }
 
@@ -281,13 +282,18 @@ class BlogController extends Controller
         if($comment == null){
             echo json_encode(['error' => true, 'message' => 'Commentaire non trouvé']);
             return 1;
-        } if(($comment->id_user != $_SESSION['id'])){ // Si ce n'est pas le commentaire de l'user co on retourne une erreur
+        } if(($comment->id_user != Superglobals::session('id'))){ // Si ce n'est pas le commentaire de l'user co on retourne une erreur
             echo json_encode(['error' => true, 'message' => 'Vous ne pouvez pas modifié ce commentaire']);
             return 1;
         }
 
         $comment->content = $content;
         $comment->is_valid = 0;
+
+        // Si l'user co est admin on valide directement le commentaire
+        if(Superglobals::session('accessLevel') >= Authentification::ACCESS_LEVEL_ADMIN){
+            $comment->is_valid = 1;
+        }
 
         $comment->update();
 
@@ -307,7 +313,7 @@ class BlogController extends Controller
         if($comment == null){
             $response['error'] = true;
             $response['message'] = 'Commentaire non trouvé';
-        } if(($comment->id_user != $_SESSION['id']) && ($_SESSION['accessLevel'] < Authentification::ACCESS_LEVEL_ADMIN)){
+        } if(($comment->id_user != Superglobals::session('id')) && (Superglobals::session('accessLevel') < Authentification::ACCESS_LEVEL_ADMIN)){
             $response['error'] = true;
             $response['message'] = 'Vous ne pouvez pas supprimé ce commentaire';
         } else {

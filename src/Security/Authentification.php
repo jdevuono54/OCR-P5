@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Exception\AuthentificationException;
+use App\Utils\Superglobals\Superglobals;
 
 class Authentification
 {
@@ -29,12 +30,12 @@ class Authentification
     public function __construct()
     {
         // Si la session existe, on set les valeurs
-        if(isset($_SESSION["email"])){
-            $this->id = $_SESSION["id"];
-            $this->email = $_SESSION["email"];
-            $this->username = $_SESSION["username"];
-            $this->accessLevel = $_SESSION["accessLevel"];
-            $this->picture = $_SESSION["picture"];
+        if(Superglobals::checkSESSION('email')){
+            $this->id = Superglobals::session("id");
+            $this->email = Superglobals::session("email");
+            $this->username = Superglobals::session("username");
+            $this->accessLevel = Superglobals::session("accessLevel");
+            $this->picture = Superglobals::session("picture");
         }
     }
 
@@ -51,11 +52,11 @@ class Authentification
         $this->accessLevel = $level;
         $this->picture = $picture;
 
-        $_SESSION['id'] = $id;
-        $_SESSION['email'] = $email;
-        $_SESSION['username'] = $username;
-        $_SESSION['accessLevel'] = $level;
-        $_SESSION['picture'] = $picture;
+        Superglobals::setSession('id', $id);
+        Superglobals::setSession('email', $email);
+        Superglobals::setSession('username', $username);
+        Superglobals::setSession('accessLevel', $level);
+        Superglobals::setSession('picture', $picture);
     }
 
     /**
@@ -83,7 +84,7 @@ class Authentification
      */
     public function logout(){
         // On unset les variables de session
-        unset($_SESSION['id'], $_SESSION['email'], $_SESSION['username'], $_SESSION['accessLevel'], $_SESSION['picture']);
+        Superglobals::unsetSESSION();
 
         $this->id = null;
         $this->email = null;

@@ -3,6 +3,7 @@
 namespace App\Utils\Router;
 
 use App\Security\Authentification;
+use App\Utils\Superglobals\Superglobals;
 use App\Utils\Twig\TwigManager;
 use InvalidArgumentException;
 
@@ -19,7 +20,7 @@ class Router
     public function __construct($file = null){
         // Si on ne passe pas un chemin perso on récup les routes dans config
         if($file == null){
-            $file = $_SERVER['DOCUMENT_ROOT'].'/../config/routes.yaml';
+            $file = Superglobals::server('DOCUMENT_ROOT').'/../config/routes.yaml';
         }
 
         $this->httpRequest = new HttpRequest();
