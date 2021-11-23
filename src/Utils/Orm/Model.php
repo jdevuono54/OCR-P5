@@ -97,22 +97,22 @@ abstract class Model
     /**
      * Permet d'update une ligne en base
      *
-     * @throws EmptyTableNameException
+     * @throws EmptyTableNameException|EmptyPrimaryKeyException
      */
     public function update($timestampUpdate = true)
     {
-        if (static::$table != null) {
-            if ($this->attr[static::$primaryKey] != null) {
-                $query = Query::table(static::$table);
-                $query->where(static::$primaryKey, "=", $this->attr[static::$primaryKey]);
-
-                $query->update($this->attr, $timestampUpdate);
-            } else {
-                throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide pour supprimé une ligne");
-            }
-        } else {
+        if (static::$table == null) {
             throw new EmptyTableNameException("Le nom de la table doit être renseigné");
         }
+
+        if ($this->attr[static::$primaryKey] == null) {
+            throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide pour modifié une ligne");
+        }
+
+        $query = Query::table(static::$table);
+        $query->where(static::$primaryKey, "=", $this->attr[static::$primaryKey]);
+
+        $query->update($this->attr, $timestampUpdate);
     }
 
     /**
@@ -127,22 +127,22 @@ abstract class Model
      */
     public function belongsTo($modele, $foreign_key, $hydrate = true)
     {
-        // Si la clé primaire est renseignée
-        if ($this->attr[static::$primaryKey] != null) {
-            $query = Query::table($modele::$table);
-
-            // On éxecute la requête, la clé primaire est = à la foreign key passer en param
-            $query = $query->where($modele::$primaryKey, "=", $this->attr[$foreign_key])->get();
-
-            // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
-            if($hydrate){
-                return $modele::arrayToObject($query)[0];
-            }
-
-            return $query[0];
-        } else { // Sinon on soulève une erreur
+        // Si la clé primaire n'est pas renseignée on soulève une erreur
+        if ($this->attr[static::$primaryKey] == null) {
             throw new EmptyPrimaryKeyException("La clé primaire ne doit pas être vide");
         }
+
+        $query = Query::table($modele::$table);
+
+        // On éxecute la requête, la clé primaire est = à la foreign key passer en param
+        $query = $query->where($modele::$primaryKey, "=", $this->attr[$foreign_key])->get();
+
+        // Si on a besoin d'hydrate on transforme le tableau en objet sinon on renvoi l'objet
+        if($hydrate){
+            return $modele::arrayToObject($query)[0];
+        }
+
+        return $query[0];
     }
 
     /**

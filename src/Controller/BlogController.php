@@ -15,7 +15,7 @@ class BlogController extends Controller
      * Route qui permet d'afficher la page d'accueil du blog
      */
     public function showHomepage(){
-        echo $this->twig->render('homepage.html.twig', []);
+        return $this->twigResponse('homepage.html.twig', ['footer' => true]);
     }
 
     /**

@@ -31,7 +31,7 @@ class Authentification
     {
         // Si la session existe, on set les valeurs
         if(Superglobals::checkSESSION('email')){
-            $this->id = Superglobals::session("id");
+            $this->uid = Superglobals::session("id");
             $this->email = Superglobals::session("email");
             $this->username = Superglobals::session("username");
             $this->accessLevel = Superglobals::session("accessLevel");
@@ -49,7 +49,7 @@ class Authentification
      * @param $picture
      */
     protected function updateSession($uid,$email, $username, $level, $picture){
-        $this->id = $uid;
+        $this->uid = $uid;
         $this->email = $email;
         $this->username = $username;
         $this->accessLevel = $level;
@@ -89,7 +89,7 @@ class Authentification
         // On unset les variables de session
         Superglobals::unsetSESSION();
 
-        $this->id = null;
+        $this->uid = null;
         $this->email = null;
         $this->username = null;
         $this->accessLevel = self::ACCESS_LEVEL_NONE;

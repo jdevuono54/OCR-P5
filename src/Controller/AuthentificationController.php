@@ -59,18 +59,22 @@ class AuthentificationController extends Controller
         if($user == null){
             return $this->twigResponse('authentification/login.html.twig',
                 ['footer' => false, 'notify' => ['danger' => 'Email ou mot de passe incorrect']]);
-        } elseif (!$user->is_valid){ // Si le compte n'est pas valide on renvoie une erreur
+        }
+
+        // Si le compte n'est pas valide on renvoie une erreur
+        if (!$user->is_valid){
             return $this->twigResponse('authentification/login.html.twig',
                 ['footer' => false, 'notify' => ['warning' => "Votre compte n'a pas encore été valider"]]);
-        } else { // Sinon on tente de log l'user
-            try{
-                $this->auth->login($user->id, $user->email, $user->username, $user->password, $password, $user->id_role, $user->picture);
+        }
 
-                $this->router->executeRoute('default');
-            } catch (AuthentificationException $e){
-                return $this->twigResponse('authentification/login.html.twig',
-                    ['footer' => false, 'notify' => ['danger' => 'Email ou mot de passe incorrect']]);
-            }
+        // on tente de log l'user
+        try{
+            $this->auth->login($user->id, $user->email, $user->username, $user->password, $password, $user->id_role, $user->picture);
+
+            $this->router->executeRoute('default');
+        } catch (AuthentificationException $e){
+            return $this->twigResponse('authentification/login.html.twig',
+                ['footer' => false, 'notify' => ['danger' => 'Email ou mot de passe incorrect']]);
         }
     }
 
