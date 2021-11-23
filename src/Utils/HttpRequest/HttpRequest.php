@@ -2,6 +2,7 @@
 
 namespace App\Utils\HttpRequest;
 
+use App\Utils\Superglobals\Superglobals;
 use Exception;
 
 /**
@@ -19,15 +20,15 @@ class HttpRequest
 
     public function __construct()
     {
-        $this->scriptName = $_SERVER["SCRIPT_NAME"];
-        $this->root = dirname($_SERVER["SCRIPT_NAME"]);
-        $this->method = $_SERVER["REQUEST_METHOD"];
+        $this->scriptName = Superglobals::server("SCRIPT_NAME");
+        $this->root = dirname(Superglobals::server("SCRIPT_NAME"));
+        $this->method = Superglobals::server("REQUEST_METHOD");
         $this->get = $_GET;
         $this->post = $_POST;
 
-        if(isset($_SERVER["REQUEST_URI"])){
-            $this->uri = $_SERVER['REQUEST_URI'];
-            $this->baseUri = strtok($_SERVER["REQUEST_URI"], '?');
+        if(Superglobals::server("REQUEST_URI")){
+            $this->uri = Superglobals::server('REQUEST_URI');
+            $this->baseUri = strtok(Superglobals::server("REQUEST_URI"), '?');
         }
     }
 
