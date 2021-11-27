@@ -169,8 +169,6 @@
                 data.push({name:'id', value: id})
             }
 
-            console.log(data);
-
             $.ajax({
                 url: id === undefined ? "/blog/post/{{ post.id }}/addComment" : "/blog/comment/update",
                 type: 'post',

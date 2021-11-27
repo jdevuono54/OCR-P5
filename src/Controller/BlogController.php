@@ -188,7 +188,7 @@ class BlogController extends Controller
 
         // Si le contenu est vide on retourne une erreur
         if(empty($content)){
-            return print_r(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
+            return print_r(json_encode(['error' => true, 'message' => 'Le contenu du commentaire est vide']));
         }
 
         $uriExploded = explode('/', $this->http->uri);
@@ -201,7 +201,7 @@ class BlogController extends Controller
 
         // Si le post n'existe pas on retourne une erreur
         if($post == null){
-            return print_r(['error' => true, 'message' => 'Article non trouvé']);
+            return print_r(json_encode(['error' => true, 'message' => 'Article non trouvé']));
         }
 
         // On crée le post
@@ -219,7 +219,7 @@ class BlogController extends Controller
 
         $comment->insert();
 
-        return print_r(['error' => false, 'message' => "Commentaire en attente d'approbation"]);
+        return print_r(json_encode(['error' => false, 'message' => "Commentaire en attente d'approbation"]));
     }
 
     /**
@@ -268,7 +268,7 @@ class BlogController extends Controller
 
         // Si le contenu est vide on retourne une erreur
         if(empty($content)){
-            return print_r(['error' => true, 'message' => 'Le contenu du commentaire est vide']);
+            return print_r(json_encode(['error' => true, 'message' => 'Le contenu du commentaire est vide']));
         }
 
         // On récup le commentaire
@@ -276,9 +276,9 @@ class BlogController extends Controller
 
         // S'il n'existe pas on retourne une erreur
         if($comment == null){
-            return print_r(['error' => true, 'message' => 'Commentaire non trouvé']);
+            return print_r(json_encode(['error' => true, 'message' => 'Commentaire non trouvé']));
         } if(($comment->id_user != Superglobals::session('id'))){ // Si ce n'est pas le commentaire de l'user co on retourne une erreur
-            return print_r(['error' => true, 'message' => 'Vous ne pouvez pas modifié ce commentaire']);
+            return print_r(json_encode(['error' => true, 'message' => 'Vous ne pouvez pas modifié ce commentaire']));
         }
 
         $comment->content = $content;
@@ -291,7 +291,7 @@ class BlogController extends Controller
 
         $comment->update();
 
-        return print_r(['error' => false, 'message' => 'Commentaire edité avec succès']);
+        return print_r(json_encode(['error' => false, 'message' => 'Commentaire edité avec succès']));
     }
 
     /**

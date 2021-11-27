@@ -56,7 +56,7 @@ class UserController extends Controller
         try {
             ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
-            return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
+            return print_r(json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]));
         }
 
         // On récup l'id de l'user
@@ -66,7 +66,7 @@ class UserController extends Controller
 
         // Si l'id de l'user connecté ne correspond pas a celui du commentaire on renvoi une erreur
         if($uidUser != Superglobals::session('id')){
-            return print_r(['error' => true, 'message' => 'Vous ne pouvez pas éditer l\'image de quelqu\'un d\'autre']);
+            return print_r(json_encode(['error' => true, 'message' => 'Vous ne pouvez pas éditer l\'image de quelqu\'un d\'autre']));
         }
 
         // On récup l'user
@@ -74,7 +74,7 @@ class UserController extends Controller
 
         // Si l'user n'existe pas on renvoi une erreur
         if($user == null){
-            return print_r(['error' => true, 'message' => 'Utilisateur non trouvé']);
+            return print_r(json_encode(['error' => true, 'message' => 'Utilisateur non trouvé']));
         }
 
         try {
@@ -88,9 +88,9 @@ class UserController extends Controller
 
             $user->update();
         } catch (\Exception $e) {
-            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
+            return print_r(json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]));
         }
 
-        return print_r(['error' => false, 'message' => 'Image modifié avec succès']);
+        return print_r(json_encode(['error' => false, 'message' => 'Image modifié avec succès']));
     }
 }

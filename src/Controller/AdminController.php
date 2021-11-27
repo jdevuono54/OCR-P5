@@ -174,14 +174,14 @@ class AdminController extends Controller
 
         // Si le titre on le contenu est manquant on retourne une erreur
         if(empty($title) || empty($content)){
-            return print_r(['error' => true, 'message' => 'Titre ou contenu manquant']);
+            return print_r(json_encode(['error' => true, 'message' => 'Titre ou contenu manquant']));
         }
 
         // Si l'image n'est pas valide on retourne une erreur
         try {
             ImageValidator::validate(Superglobals::files("image"));
         } catch (ImageValidationException $e){
-            return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
+            return print_r(json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]));
         }
 
         try {
@@ -199,10 +199,10 @@ class AdminController extends Controller
 
             $post->insert();
         } catch (\Exception $e) {
-            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
+            return print_r(json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]));
         }
 
-        return print_r(['error' => false, 'message' => 'Article créer avec succès']);
+        return print_r(json_encode(['error' => false, 'message' => 'Article créer avec succès']));
     }
 
     /**
@@ -346,7 +346,7 @@ class AdminController extends Controller
 
         // Si le titre ou contenu est manquant  on retourne une erreur
         if(empty($title) || empty($content)){
-            return print_r(['error' => true, 'message' => 'Titre ou contenu manquant']);
+            return print_r(json_encode(['error' => true, 'message' => 'Titre ou contenu manquant']));
         }
 
         // On valide l'image sinon on retourne une erreur
@@ -354,7 +354,7 @@ class AdminController extends Controller
             try {
                 ImageValidator::validate(Superglobals::files("image"));
             } catch (ImageValidationException $e){
-                return print_r(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]);
+                return print_r(json_encode(['error' => true, 'message' => 'Image invalide : ' . $e->getMessage()]));
             }
         }
 
@@ -372,10 +372,10 @@ class AdminController extends Controller
 
             $post->update();
         } catch (\Exception $e) {
-            return print_r(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]);
+            return print_r(json_encode(['error' => true, 'message' => 'Erreur :' . $e->getMessage()]));
         }
 
-        return print_r(['error' => false, 'message' => 'Article modifier avec succès']);
+        return print_r(json_encode(['error' => false, 'message' => 'Article modifier avec succès']));
     }
 
     /**
