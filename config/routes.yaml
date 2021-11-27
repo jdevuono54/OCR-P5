@@ -1,2 +1,40 @@
 # La clé sert d'alias puis dans le tableau [route, controller.methode], niveau d'auth requis, méthode
 default: [/, App\Controller\BlogController.showHomepage, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+login: [/auth/login, App\Controller\AuthentificationController.showLogin, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+signin: [/signin, App\Controller\AuthentificationController.login, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+logout: [/auth/logout, App\Controller\AuthentificationController.logout, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+register: [/auth/register, App\Controller\AuthentificationController.showRegister, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+registration: [/auth/registration, App\Controller\AuthentificationController.registration, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, POST]
+
+profile: [/profile/{id}, App\Controller\UserController.showProfile, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+editProfile: [/profile/{id}/edit, App\Controller\UserController.editProfile, !php/const App\Security\Authentification::ACCESS_LEVEL_USER, POST]
+
+contact: [/contact, App\Controller\BlogController.contact, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, POST]
+blog: [/blog, App\Controller\BlogController.showBlog, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+showPost: [/blog/post/{id}, App\Controller\BlogController.showPost, !php/const App\Security\Authentification::ACCESS_LEVEL_NONE, GET]
+addComment: [/blog/post/{id}/addComment, App\Controller\BlogController.addComment, !php/const App\Security\Authentification::ACCESS_LEVEL_USER, POST]
+updateComment: [/blog/comment/update, App\Controller\BlogController.updateComment, !php/const App\Security\Authentification::ACCESS_LEVEL_USER, POST]
+
+validUser: [/auth/user/validation, App\Controller\AuthentificationController.validUser, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+
+adminHome: [/admin, App\Controller\AdminController.showHome, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+
+adminUsers: [/admin/users, App\Controller\AdminController.showUsers, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+getUsers: [/admin/users/ajax, App\Controller\AdminController.getUsers, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+
+adminUsersValidation: [/admin/users/validation, App\Controller\AdminController.showUsersValidation, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+getUsersValidation: [/admin/users/validation/ajax, App\Controller\AdminController.getUsersValidation, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+
+adminCommentsValidation: [/admin/comments/validation, App\Controller\AdminController.showCommentsValidation, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+getCommentsValidation: [/admin/comments/validation/ajax, App\Controller\AdminController.getCommentsValidation, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+validComment: [/admin/comment/valid, App\Controller\BlogController.validComment, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+deleteComment: [/admin/comment/delete, App\Controller\BlogController.deleteComment, !php/const App\Security\Authentification::ACCESS_LEVEL_USER, POST]
+
+showAddArticle: [/admin/articles/showAddArticle, App\Controller\AdminController.showAddArticle, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+addArticle: [/admin/articles/addArticle, App\Controller\AdminController.addArticle, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+showUpdateArticle: [/admin/articles/showUpdateArticle/{id}, App\Controller\AdminController.showUpdateArticle, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+updateArticle: [/admin/articles/updateArticle/{id}, App\Controller\AdminController.updateArticle, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+deleteArticle: [/admin/articles/deleteArticle, App\Controller\AdminController.deleteArticle, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, POST]
+
+adminArticles: [/admin/articles, App\Controller\AdminController.showArticles, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]
+getArticlesAdmin: [/admin/articles/ajax, App\Controller\AdminController.getArticles, !php/const App\Security\Authentification::ACCESS_LEVEL_ADMIN, GET]

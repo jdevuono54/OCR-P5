@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <link rel="stylesheet" href="/stylesheets/global.css"/>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" integrity="sha512-tk4nGrLxft4l30r9ETuejLU0a3d7LwMzj0eXjzc16JQj+5U1IeVoCuGLObRDc3+eQMUcEQY1RIDPGvuA7SNQ2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" integrity="sha512-P9vJUXK+LyvAzj8otTOKzdfF1F3UYVl13+F8Fof8/2QNb8Twd6Vb+VD52I7+87tex9UXxnzPgWA3rH96RExA7A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+            <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+            <link rel="icon" href="/images/favicon.ico" />
+
+            {% block head %}
+            {% endblock %}
+
+            {% block stylesheets %}{% endblock %}
+
+            <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        {% include 'partial/navbar.html.twig' %}
+
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+
+        {% if footer is not defined or footer != false %}
+            {% include 'partial/footer.html.twig' %}
+        {% endif %}
+
+        <script src="/scripts/main.js"></script>
+
+        {% block script %}
+        {% endblock %}
+
+        <script>
+            {% if notify is defined %}
+                {% for type, message in notify %}
+                       notify('{{ type }}', '{{ message }}');
+                {% endfor %}
+            {% endif %}
+
+            function notify(type, message){
+                const notifHtml = `<div class="notification is-${type} column mt-5" style="position: absolute;max-width: 20%;right: 10px;">${message}</div>`;
+
+                $(notifHtml).hide().prependTo("#content").show("drop").delay(5000).fadeOut("slow");
+            }
+        </script>
+
+    </body>
+</html>

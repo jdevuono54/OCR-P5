@@ -1,0 +1,10 @@
+{% extends "/email/baseEmail.html.twig" %}
+
+{% block content %}
+    <p>Nom : {{ lastname }}</p>
+    <p>Prénom : {{ firstname }}</p>
+    <p>Email :{{ mail }}</p>
+    <p>Sujet : {{ subject }}</p>
+    <p>Message : </p>
+    <div>{{ message }}</div>
+{% endblock %}

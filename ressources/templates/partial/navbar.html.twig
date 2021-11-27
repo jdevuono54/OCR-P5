@@ -1,0 +1,83 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item navbar-logo" href="/">
+        </a>
+
+        {% if '/admin' in uri %}
+            <a class="navbar-item" id="toggle-sidePanel">
+                <i class="fas fa-outdent"></i>
+            </a>
+        {% endif %}
+
+        <a role="button" class="navbar-burger navbar-item is-hidden-desktop" aria-label="menu" aria-expanded="false" data-target="nav">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="nav" class="navbar-menu">
+        <div class="navbar-end">
+            <a class="navbar-item" href="/">Accueil</a>
+
+            <a class="navbar-item" href="/blog">
+                Blog
+            </a>
+
+            <div class="navbar-item p-0">
+                <div class="buttons">
+                    {% if session.username is not defined %}
+                        <a class="button is-primary" href="/auth/register">
+                            <strong>S'inscire</strong>
+                        </a>
+                        <a class="button is-light" href="/auth/login">
+                            Se connecter
+                        </a>
+                    {% endif %}
+                </div>
+                {% if session.username is  defined %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link navbar-item">
+                        <span class="user-profile-picture-container mr-2 is-hidden-mobile">
+                            <img class="user-profile-picture" src="{{ session.picture ? '/upload/profile-picture/' ~ session.picture :'/images/default-user.png' }}" loading="lazy">
+                        </span>
+
+                        {{ session.username }}
+                    </a>
+                    <div class="navbar-dropdown is-boxed">
+                        <a class="navbar-item has-text-weight-bold dropdown-item" href="/profile/{{ session.id }}">
+                            Profil
+                        </a>
+                        {% if session.accessLevel >= 3 %}
+                            <a class="navbar-item has-text-weight-bold dropdown-item" href="/admin">
+                                Administration
+                            </a>
+                        {% endif %}
+                        <a class="navbar-item has-text-weight-bold dropdown-item" href="/auth/logout">
+                            Déconnexion
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    $(document).ready(function() {
+
+        // Check for click events on the navbar burger icon
+        $(".navbar-burger").click(function() {
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            $(".navbar-burger").toggleClass("is-active");
+            $(".navbar-menu").toggleClass("is-active");
+
+        });
+    });
+
+    $("#toggle-sidePanel").click(() => {
+        $('.side-panel').toggleClass('is-hidden');
+    });
+</script>

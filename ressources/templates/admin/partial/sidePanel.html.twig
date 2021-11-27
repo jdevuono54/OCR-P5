@@ -1,0 +1,57 @@
+<aside class="side-panel hero is-fullheight-with-navbar column is-2 p-4 is-justify-content-start">
+    <p class="menu-label is-hidden-touch has-text-white">Navigation</p>
+    <ul class="menu-list">
+        <li>
+            <a href="/admin" class="has-text-white">
+                <span class="icon is-white"><i class="fa fa-home"></i></span> Home
+            </a>
+        </li>
+        <li>
+            <a href="#" class="has-text-white his-parent-menu">
+                <span class="icon"><i class="fas fa-newspaper"></i></span> Articles
+            </a>
+
+            <ul class="is-hidden">
+                <li>
+                    <a href="/admin/articles/showAddArticle" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-plus-square"></i></span> Ajouter un article
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/articles" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-list"></i></span> Voir les articles
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/comments/validation" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-comments"></i></span> Voir les commentaires en attente
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="has-text-white his-parent-menu">
+                <span class="icon"><i class="fas fa-users"></i></span> Utilisateurs
+            </a>
+
+            <ul class="is-hidden">
+                <li>
+                    <a href="/admin/users" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-list"></i></span> Voir les utilisateurs
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/users/validation" class="has-text-white">
+                        <span class="icon is-small"><i class="fas fa-user-check"></i></span> Demande de validation
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+<script>
+    $('.his-parent-menu').click(e => {
+        $(e.currentTarget).next().toggleClass('is-hidden');
+    });
+</script>

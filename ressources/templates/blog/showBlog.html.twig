@@ -1,0 +1,40 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Blog{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/stylesheets/blog/blog.css"/>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="columns is-multiline">
+            {% for post in posts %}
+                <div class="column is-half">
+                    <a href="/blog/post/{{ post.id }}" class="has-text-black">
+                        <article class="tile is-child box">
+                            <img class="post-picture mb-1" src="/upload/post/{{ post.picture }}" loading="lazy">
+
+                            <p class="title mt-2">{{ post.title }}</p>
+
+                            <p class="subtitle is-size-6">
+                                <i class="fas fa-user mt-2"></i> <a href="/profile/{{ post.author_id }}" class="has-texte-primary">{{ post.author }}</a>
+                                <i class="fa fa-calendar-alt ml-2"></i> {{ post.created_at|date('d/m/Y') }}
+                            </p>
+
+                            <div class="post-content mt-2">
+                                {{ post.content | raw }}
+                            </div>
+                        </article>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% include 'partial/pagination.html.twig' %}
+    </div>
+{% endblock %}

@@ -1,17 +1,24 @@
 {
-    "name": "jdevuono54/ocr-p5",
-    "description": "Personnal blog for Openclassrooms course",
-    "type": "project",
-    "license": "MIT",
-    "require": {
-		"php": "^7.4",
-        "twig/twig": "^2.0",
-        "symfony/yaml": "^5.3",
-      "ext-json": "*"
-    },
-	"autoload": {
-		"psr-4": {
-		  "App\\": "src/"
-		}
-	}
+  "name": "jdevuono54/ocr-p5",
+  "description": "Personnal blog for Openclassrooms course",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^7.4",
+    "twig/twig": "^2.0",
+    "symfony/yaml": "^5.3",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "symfony/mailer": "^5.3",
+    "symfony/twig-bridge": "^5.3",
+    "ext-gd": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^5.3"
+  }
 }

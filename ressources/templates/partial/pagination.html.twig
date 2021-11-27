@@ -1,0 +1,43 @@
+{% if pagination.nbPages >1 %}
+    <nav class="pagination is-centered mt-4 mb-4" role="navigation" aria-label="pagination">
+        {% if pagination.page > 1 %}
+            <a class="pagination-previous" href="?p={{ pagination.page - 1}}">Précédent</a>
+        {% endif %}
+
+        {% if pagination.page < pagination.nbPages %}
+            <a class="pagination-next" href="?p={{ pagination.page + 1}}">Suivant</a>
+        {% endif %}
+
+        <ul class="pagination-list">
+            {% if pagination.nbPages > 3 and pagination.page > 2 %}
+                <li><a class="pagination-link {{ pagination.page == 1 ? ' is-current' : '' }}" href="?p=1}">1</a></li>
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+
+
+            {% if pagination.page == 1 %}
+                <li><a class="pagination-link is-current">{{ pagination.page }}</a></li>
+
+                {% if pagination.page + 1 <= pagination.nbPages %}
+                    <li><a class="pagination-link" href="?p={{ pagination.page + 1}}">{{ pagination.page + 1}}</a></li>
+                {% endif %}
+
+                {% if pagination.page + 2 <= pagination.nbPages %}
+                    <li><a class="pagination-link" href="?p={{ pagination.page + 2}}">{{ pagination.page + 2}}</a></li>
+                {% endif %}
+            {% else %}
+                <li><a class="pagination-link" href="?p={{ pagination.page - 1}}">{{ pagination.page - 1}}</a></li>
+                <li><a class="pagination-link is-current">{{ pagination.page }}</a></li>
+
+                {% if pagination.page + 1 <= pagination.nbPages %}
+                    <li><a class="pagination-link" href="?p={{ pagination.page + 1}}">{{ pagination.page + 1}}</a></li>
+                {% endif %}
+            {% endif %}
+
+            {% if pagination.nbPages > 3  and pagination.page != pagination.nbPages %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                <li><a class="pagination-link" href="?p={{ pagination.nbPages }}">{{ pagination.nbPages }}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

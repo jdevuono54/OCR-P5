@@ -15,7 +15,7 @@ class ConnectionFactory
      *
      * @param array $conf
      *
-     * @return PDO
+     * @return int|PDO
      */
     public static function makeConnection(array $conf): PDO
     {
@@ -28,8 +28,7 @@ class ConnectionFactory
         try {
             self::$pdo = new PDO('mysql:host='.$conf["host"].';dbname='.$conf["dbname"].'', $conf["user"], $conf["pass"], $options);
         } catch (PDOException $e) {
-            print "Erreur !: " . $e->getMessage() . "<br/>";
-            die();
+            dd("Erreur !: " . $e->getMessage() . "<br/>");
         }
         return self::$pdo;
     }
@@ -40,10 +39,10 @@ class ConnectionFactory
      * @throws Exception
      */
     public static function getConnection(){
-        if(self::$pdo != null){
-            return self::$pdo;
-        }else{
+        if(self::$pdo == null){
             throw new Exception("Il faut configurer la connexion");
         }
+
+        return self::$pdo;
     }
 }

@@ -1,0 +1,184 @@
+{% extends "admin/base.html.twig" %}
+
+{% block title %}Utilisateurs - Admin{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+{% endblock %}
+
+{% block adminContent %}
+    <nav class="breadcrumb is-right" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin">
+                    <span class="icon is-small">
+                      <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
+                    <span>Administration</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/articles/showAddArticle">
+                    <span class="icon is-small">
+                        <i class="fas fa-plus-square"></i>
+                    </span>
+
+                    {% if post is defined %}
+                        <span>Modifier l'article</span>
+                    {% else %}
+                        <span>Ajouter un article</span>
+                    {% endif %}
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="tile">
+        <article class="tile is-child box">
+            {% if post is defined %}
+                <p class="title">Modifier l'article</p>
+            {% else %}
+                <p class="title">Ajouter un article</p>
+            {% endif %}
+
+            <div class="content">
+                <form class="box" id="addArticleForm" enctype="multipart/form-data">
+                    <div class="field">
+                        <label class="label">Titre</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" placeholder="Titre de l'article" name="title" value="{{ post.title }}" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-heading"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Image</label>
+                        <div class="file has-name is-fullwidth" id="image">
+                            <label class="file-label">
+                                <input class="file-input" type="file" name="image">
+                                <span class="file-cta">
+                                  <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                  </span>
+                                  <span class="file-label">
+                                    Choisir une image
+                                  </span>
+                                </span>
+                                <span class="file-name">
+                                    {% if user.picture is defined %}
+                                        {{ user.picture }}
+                                    {% else %}
+                                        Aucune image sélectionnée pour le moment
+                                    {% endif %}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Contenu</label>
+                        <div class="quill-textarea" id="editor" style="height: 33vh;">
+                            {{ post.content|raw }}
+                        </div>
+
+                        <textarea style="display: none" id="quill-form" name="content"></textarea>
+                    </div>
+
+                    <div class="has-text-right-desktop has-text-centered mt-2">
+                        <button class="button is-primary" id="form-button">{{ post.id is not defined ? "Créer l'article" : "Modifier l'article"}}</button>
+                        <input type="text" style="display: none" id="id" name="id">
+                    </div>
+                </form>
+            </div>
+        </article>
+    </div>
+
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: "Contenu de l'article...",
+            modules: {
+                imageResize: {
+                    modules: [ 'Resize', 'DisplaySize', 'Toolbar' ]
+                },
+                toolbar: [
+                    [{ 'header': 2 }],
+
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+
+                    [{ 'header': [2, 3, 4, 5, 6, false] }],
+                    [ 'link', 'image', 'video', 'formula' ],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+
+                    ['clean']
+                ]
+            },
+        });
+
+        // On copie les valeurs de l'editeur dans un champ caché
+        quill.on('text-change', () => {
+            $('#quill-form').val(quill.container.firstChild.innerHTML);
+            $('#editor').removeClass('is-invalid')
+        });
+
+        // Lors de l'envoi du formulaire
+        $('#addArticleForm').submit(function(e) {
+            e.preventDefault();
+
+            // On check que l'editeur n'est pas vide
+            if($('#quill-form').val() === ''){
+                $('#editor').addClass('is-invalid');
+                return;
+            }
+
+            // On met un spin sur le btn du formulaire
+            $('#form-button').prop("disabled", true).addClass('is-loading');
+
+            // On envoie les données
+            $.ajax({
+                url: "{{ post.id is not defined ? '/admin/articles/addArticle' : '/admin/articles/updateArticle/' ~ post.id }}",
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: new FormData(this),
+            }).done(response => {
+                if(!response.error){
+                    notify('success', response.message);
+
+                    setTimeout(redirectToShowArticles, 2000);
+                } else {
+                    notify('danger', response.message);
+
+                    $('#form-button').prop("disabled", false).removeClass('is-loading');
+                    $('#form-button').prop("disabled", false).removeClass('is-loading');
+                }
+            });
+        });
+
+        // On met à jour le nom du fichier quand on upload un fichier
+        const fileInput = document.querySelector('#image input[type=file]');
+        fileInput.onchange = () => {
+            if (fileInput.files.length > 0) {
+                const fileName = document.querySelector('#image .file-name');
+                fileName.textContent = fileInput.files[0].name;
+            }
+        }
+
+        function redirectToShowArticles(){
+            document.location.href="/admin/articles";
+        }
+    </script>
+{% endblock %}

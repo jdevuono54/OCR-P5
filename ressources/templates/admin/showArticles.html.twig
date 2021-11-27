@@ -1,0 +1,94 @@
+{% extends "admin/base.html.twig" %}
+
+{% block title %}Utilisateurs - Admin{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bulma.min.css">
+
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bulma.min.js"></script>
+{% endblock %}
+
+{% block adminContent %}
+    <nav class="breadcrumb is-right" aria-label="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin">
+                    <span class="icon is-small">
+                      <i class="fas fa-home" aria-hidden="true"></i>
+                    </span>
+                    <span>Administration</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/articles">
+                    <span class="icon is-small">
+                      <i class="fas fa-list" aria-hidden="true"></i>
+                    </span>
+                    <span>Liste des articles</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="tile">
+        <article class="tile is-child box">
+            <p class="title">Tous les articles</p>
+            <div class="content">
+                <table class="table" id="articlesTable" style="width: 100%">
+                    <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Image</th>
+                        <th>Auteur</th>
+                        <th>Date de création</th>
+                        <th>Dernière modification</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const table = $('#articlesTable').DataTable( {
+                processing: true,
+                serverSide: true,
+                ordering: false,
+                lengthChange: false,
+                ajax: '/admin/articles/ajax',
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                },
+                columns: [
+                    { data: "title"},
+                    { data: "picture" },
+                    { data: "author" },
+                    { data: "created_at" },
+                    { data: "updated_at" },
+                    { data: "actions" }
+                ]
+            } );
+
+
+            $(document).on('click','.delete-post',e => {
+                if (window.confirm("Êtes vous sûr ?")) {
+                    $.post( "/admin/articles/deleteArticle", { id: $(e.currentTarget).data('article-id')} ).done(data => {
+                        if(!data.error){
+                            notify('success', 'Article supprimé !');
+
+                            table.row($(this).parents('tr')).remove().draw();
+                        } else {
+                            notify('danger', data.message);
+                        }
+                    });
+                }
+            });
+        } );
+    </script>
+{% endblock %}

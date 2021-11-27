@@ -1,0 +1,97 @@
+<footer class="footer p-0">
+    <div class="container is-widescreen">
+        <form id="contact-form" method="post" action="contact">
+            <h3 class="title is-3 has-text-white">Nous contactez</h3>
+            <div class="columns">
+                <div class="column">
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control is-expanded has-icons-left">
+                                    <input class="input" type="text" placeholder="Nom" name="lastname" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-user"></i>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="field">
+                                <p class="control is-expanded has-icons-left">
+                                    <input class="input" type="text" placeholder="Prénom" name="firstname" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-user"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control is-expanded has-icons-left">
+                                    <input class="input" type="email" placeholder="Adresse email" name="email" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-envelope"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control is-expanded has-icons-left">
+                                    <input class="input" type="text" placeholder="Sujet" name="subject" required>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-heading"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control">
+                                    <textarea class="textarea is-small" placeholder="Écrivez votre message ici" name="message" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal has-text-centered">
+                        <div class="field-label"></div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button is-primary h-captcha" data-sitekey="321158f8-9384-4da6-8cb3-d5400d7c6912" data-callback="onSubmit">
+                                        Envoyer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="content has-text-centered has-text-white">
+        <p>
+            © Copyright {{ "now"|date("Y") }} - Jdevuono -
+            <small>
+                This site is protected by hCaptcha and its
+                <a href="https://hcaptcha.com/privacy" class="has-text-grey">Privacy Policy</a> and
+                <a href="https://hcaptcha.com/terms" class="has-text-grey">Terms of Service</a> apply.
+            </small>
+        </p>
+    </div>
+</footer>
+
+<script type="text/javascript">
+    function onSubmit(token) {
+        document.getElementById('contact-form').submit();
+    }
+</script>

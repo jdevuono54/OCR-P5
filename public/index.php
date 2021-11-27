@@ -2,8 +2,13 @@
 
 use App\Utils\Orm\ConnectionFactory;
 use App\Utils\Router\Router;
+use App\Utils\Superglobals\Superglobals;
 
-require __DIR__.'/../vendor/autoload.php';
+require '../vendor/autoload.php';
+
+if(!Superglobals::checkSESSION()){
+    session_start();
+}
 
 date_default_timezone_set('Europe/Paris');
 
@@ -13,8 +18,5 @@ ConnectionFactory::makeConnection($conf["database"]);
 
 // On crée le router
 $router = new Router();
-
-// On charge les routes du projet
-$router->loadRoutesFromYaml(__DIR__.'/../config/routes.yaml');
 
 $router->run();
